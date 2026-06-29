@@ -168,6 +168,9 @@ Lalu hard reload browser dengan `Ctrl+Shift+R`.
 Magang — PLN ULP Cilacap  
 S1 Sistem Informasi, Telkom University Purwokerto
 
+**Izma Syabrian**
+Magang — PLN ULP Cilacap
+S1 Sistem Informasi, Telkom University Purwokerto
 ---
 
 ## License
