@@ -1,120 +1,175 @@
-# SIPLIN - Sistem Inventaris Barang Kabupaten Kubu Raya
+# SIPLIN — Sistem Inventaris Barang PLN ULP Cilacap
 
-![Laravel](https://img.shields.io/badge/Laravel-12.40.1-red?style=flat-square&logo=laravel)
-![PHP](https://img.shields.io/badge/PHP-8.3-purple?style=flat-square&logo=php)
-![License](https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square)
-![Version](https://img.shields.io/badge/Version-1.2.0--stable-green?style=flat-square)
+Aplikasi web untuk pencatatan dan pengelolaan inventaris barang di lingkungan PLN ULP Cilacap. Dibangun dengan Laravel 12 sebagai bagian dari proyek magang.
 
-Sistem manajemen inventaris barang berbasis web untuk instansi pemerintah, BUMN/BUMD, dan perusahaan swasta. Dibangun dengan Laravel 12.
+![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php)
+![Status](https://img.shields.io/badge/Status-Development-orange)
 
 ---
 
-## ⚡ Quick Start
+## Tentang Proyek
+
+SIPLIN dikembangkan untuk menggantikan pencatatan inventaris manual di PLN ULP Cilacap dengan sistem terpusat yang mencakup:
+
+- Pencatatan barang (kategori, lokasi, kondisi)
+- Transfer barang antar lokasi
+- Pemeliharaan dan pencatatan kerusakan
+- Penghapusan barang
+- Laporan inventaris dengan export PDF
+- Manajemen pengguna dengan role-based access
+
+---
+
+## Stack
+
+- **Backend**: Laravel 12, PHP 8.3
+- **Database**: MySQL (XAMPP)
+- **Frontend**: Blade + Tailwind CSS + Alpine.js
+- **Build Tool**: Vite
+
+---
+
+## Quick Start
+
+### 1. Clone
 
 ```bash
-git clone https://github.com/risunCode/SIPLIN-Laravel.git sibaraku
-cd sibaraku
-composer install && npm install
-cp .env.example .env && php artisan key:generate
-php artisan migrate:fresh --seed
-npm run build && php artisan serve
+git clone https://github.com/surthe49-hub/SIPLIN.git
+cd SIPLIN
 ```
 
-**Akses:** http://localhost:8000  
-**Login:**
-- Admin: `admin@inventaris.com` / `panelsibaraku`
-- Staff: `staff@inventaris.com` / `panelsibaraku`
+### 2. Install Dependencies
 
-> 📖 Panduan lengkap: [INSTALLATION.md](INSTALLATION.md)
+```bash
+composer install
+npm install
+```
 
----
+### 3. Konfigurasi Environment
 
-## ✨ Fitur Utama
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-| Modul | Deskripsi |
-|-------|-----------|
-| **Dashboard** | Visualisasi real-time dengan Chart.js |
-| **Barang** | CRUD lengkap dengan galeri gambar |
-| **Kategori & Lokasi** | Manajemen data master |
-| **Transfer** | Mutasi barang dengan workflow approval |
-| **Pemeliharaan** | Jadwal dan log perawatan |
-| **Penghapusan** | Disposal dengan sistem approval |
-| **Laporan PDF** | 7 template laporan siap cetak |
-| **Multi-role** | Admin & Staff dengan permission berbeda |
-| **Dark Mode** | Tema gelap untuk kenyamanan |
+Edit `.env`, sesuaikan koneksi database:
 
----
+```env
+DB_DATABASE=siplin
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## 📸 Tangkapan Layar
+### 4. Database
 
-<details open>
-<summary><strong>🖥️ Desktop View</strong></summary>
-<br>
+Buat database `siplin` di phpMyAdmin atau MySQL CLI:
 
-| | |
-|:---:|:---:|
-| ![Login Page](https://github.com/user-attachments/assets/98e34d62-83b5-45b2-b674-e768ae1a782f) | ![First Login](https://github.com/user-attachments/assets/d8a7482a-276e-4bfe-bc0a-b926dab7fd72) |
-| **Login Page** | **First Login Setup** |
-| ![Dashboard Light](https://github.com/user-attachments/assets/97593792-a5c1-45a4-a643-5fde40581f67) | ![Dashboard Dark](https://github.com/user-attachments/assets/3f7ecc14-9f20-4d2e-882f-363e19ec9fdf) |
-| **Dashboard (Light)** | **Dashboard (Dark)** |
-| ![Inventaris Barang](https://github.com/user-attachments/assets/767e9bcc-d776-49ab-9bc4-77508bb5edde) | ![Kategori](https://github.com/user-attachments/assets/702d83f7-08d7-498e-b571-82f61c3972e5) |
-| **Inventaris Barang** | **Kategori** |
-| ![Lokasi](https://github.com/user-attachments/assets/e80f6a22-744c-491f-b414-05a48d1bc51a) | ![Profile](https://github.com/user-attachments/assets/f183ef6f-291b-4fea-bf59-24d17babd9a3) |
-| **Lokasi** | **Profile** |
-| ![About Light](https://github.com/user-attachments/assets/cbda2859-0b2d-405f-87e5-a74d6046df82) | ![About Dark](https://github.com/user-attachments/assets/948dea1e-c464-4b79-81c1-70cdc19712f9) |
-| **About (Light)** | **About (Dark)** |
+```sql
+CREATE DATABASE siplin;
+```
 
-</details>
+Lalu jalankan migrasi:
 
----
+```bash
+php artisan migrate --seed
+```
 
-## 🛠️ Teknologi
+### 5. Build Assets
 
-| Backend | Frontend | Tools |
-|---------|----------|-------|
-| Laravel 12.40.1 | TailwindCSS 4.0 | Vite 7.0 |
-| PHP 8.3 | Alpine.js 3.15 | DomPDF 3.1 |
-| MySQL/SQLite | Chart.js 4.x | Spatie Permission |
+```bash
+npm run build
+```
 
----
+Untuk development dengan hot reload:
 
-## 📊 Struktur Database
+```bash
+npm run dev
+```
 
-<img width="800" alt="ERD SIPLIN" src="https://github.com/user-attachments/assets/94ea2684-844c-4374-a587-959d1bdb57aa" />
+### 6. Jalankan Server
 
-**17 Tabel:** users, categories, locations, commodities, commodity_images, transfers, maintenances, disposals, activity_logs, notifications, referral_codes, dll.
+```bash
+php artisan serve
+```
 
-> 📁 SQL Schema: `database/sibaraku-full.sql`
+Akses di [http://localhost:8000](http://localhost:8000).
 
 ---
 
-## 📚 Dokumentasi
+## Default Login
 
-| Dokumen | Deskripsi |
-|---------|-----------|
-| [INSTALLATION.md](INSTALLATION.md) | Panduan instalasi lengkap |
-| [DEPLOYMENT.md](DEPLOYMENT.md) | Deploy ke produksi (ngrok, VPS, shared hosting) |
-| [CHANGELOG.md](CHANGELOG.md) | Riwayat perubahan |
-| [ROUTING.md](ROUTING.md) | Dokumentasi API & routes |
+Setelah `php artisan migrate --seed`, akun default:
 
----
+| Role  | Email                  | Password   |
+|-------|------------------------|------------|
+| Admin | admin@inventaris.com   | admin123   |
+| Staff | staff@inventaris.com   | admin123   |
 
-## 📋 TODO
-
-- [ ] **PDF Export Enhancement** - Meningkatkan kualitas tampilan PDF export
+> ⚠️ Ganti password sebelum digunakan di lingkungan production.
 
 ---
 
-## 📄 Lisensi
+## Struktur Folder Utama
 
-Proyek ini dilisensikan di bawah [GPL-3.0 License](LICENSE).
+```
+siplin/
+├── app/
+│   ├── Http/Controllers/     # Logic per fitur (commodity, transfer, dll)
+│   ├── Models/                # Eloquent models
+│   ├── Helpers/siplin.php     # Helper functions custom
+│   └── Observers/             # Model observers untuk audit log
+├── database/
+│   ├── migrations/            # Schema database
+│   └── seeders/               # Data awal (admin, kategori, lokasi)
+├── resources/
+│   └── views/                 # Blade templates
+│       ├── auth/              # Login & register
+│       ├── commodities/       # Manajemen barang
+│       ├── transfers/         # Mutasi barang
+│       └── reports/           # Laporan
+└── routes/
+    └── web.php                # Definisi route utama
+```
 
 ---
 
-## ℹ️ Catatan Nama
+## Catatan Pengembangan
 
-**SIPLIN** (Sistem Inventaris Barang Kubu Raya) adalah nama terbaru dari sistem ini. Sebelumnya bernama SIPLIN, diubah untuk menghindari konflik dengan proyek lain yang sudah ada.
+Proyek ini di-fork dari template open-source SIBARAKU (`risunCode/SIBARAKU-Laravel`) lalu dimodifikasi cukup signifikan untuk kebutuhan PLN ULP Cilacap. Perubahan utama:
+
+- Rebrand penuh ke identitas SIPLIN
+- Penyederhanaan form input barang
+- Hapus fitur kode referral & forced security setup (tidak relevan dengan kebutuhan internal)
+- Tambah landing page publik di route `/`
+- Penyesuaian alur logout
 
 ---
 
-**Dikembangkan untuk Kabupaten Kubu Raya** 🏛️
+## Troubleshooting
+
+**MySQL tidak terhubung** — Pastikan XAMPP MySQL aktif. Cek di Control Panel.
+
+**419 Page Expired saat logout** — Sudah di-fix dengan menambahkan route GET `/logout`. Kalau masih muncul, jalankan `php artisan view:clear`.
+
+**Logo tidak muncul** — File `public/images/logo-pln.png` harus ada. Cek ukuran file dan format.
+
+**View tidak update setelah edit blade** — Jalankan:
+```bash
+php artisan view:clear
+```
+Lalu hard reload browser dengan `Ctrl+Shift+R`.
+
+---
+
+## Author
+
+**Muhammad Rafi Awallaisal**  
+Magang — PLN ULP Cilacap  
+S1 Sistem Informasi, Telkom University Purwokerto
+
+---
+
+## License
+
+Proyek internal magang. Hak cipta source code mengikuti lisensi GPL-3.0 dari template asal.
