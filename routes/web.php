@@ -205,49 +205,8 @@ Route::middleware('auth')->group(function () {
         Route::get('kib', [ReportController::class, 'kib'])->name('reports.kib');
     });
 
-    // ========================================
-    // ADMIN (Pengguna, Kode Referral)
-    // ========================================
-    Route::prefix('admin')->group(function () {
-        // Pengguna (Users)
-        Route::resource('pengguna', UserController::class)->names([
-            'index' => 'users.index',
-            'create' => 'users.create',
-            'store' => 'users.store',
-            'show' => 'users.show',
-            'edit' => 'users.edit',
-            'update' => 'users.update',
-            'destroy' => 'users.destroy',
-        ])->parameters(['pengguna' => 'user']);
-
-        // Kode Referral
-        Route::prefix('kode-referral')->group(function () {
-            Route::get('/', [ReferralCodeController::class, 'index'])
-                 ->middleware('permission:referral-codes.own')
-                 ->name('referral-codes.index');
-            
-            // Perbaikan penanganan store dengan permission
-            Route::post('/', [ReferralCodeController::class, 'store'])
-                 ->middleware('permission:referral-codes.create')
-                 ->name('referral-codes.store');
-            
-            Route::get('generate', [ReferralCodeController::class, 'generate'])
-                 ->middleware('permission:referral-codes.create')
-                 ->name('referral-codes.generate');
-            
-            Route::put('{referralCode}', [ReferralCodeController::class, 'update'])
-                 ->middleware('permission:referral-codes.own')
-                 ->name('referral-codes.update');
-                 
-            Route::post('{referralCode}/toggle', [ReferralCodeController::class, 'toggle'])
-                 ->middleware('permission:referral-codes.own')
-                 ->name('referral-codes.toggle');
-                 
-            Route::delete('{referralCode}', [ReferralCodeController::class, 'destroy'])
-                 ->middleware('permission:referral-codes.own')
-                 ->name('referral-codes.destroy');
-        });
-    });
+  
+   
 
     // About Page
     Route::get('about', fn() => view('about'))->name('about');
