@@ -33,7 +33,7 @@
                class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto">
             
             <div class="flex items-center gap-3 h-16 px-6 border-b border-gray-200">
-                <img src="/images/logo-pbj-kalbar.png" alt="Logo" class="w-8 h-8 object-contain">
+                <img src="/images/logo-pln.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="font-semibold text-gray-900">Inventaris</span>
             </div>
 

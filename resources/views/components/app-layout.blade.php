@@ -16,8 +16,8 @@
     <title>{{ $title ? $title . ' - ' : '' }}{{ config('app.name') }}</title>
     
     <!-- App Icon & Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-pln.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-pln.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-pln-no-bg.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-pln-no-bg.png') }}">
     <meta name="theme-color" content="#4f46e5">
     
     <!-- DNS Prefetch & Preconnect for faster loading -->
@@ -46,7 +46,7 @@
             <!-- Logo -->
             <div class="flex items-center justify-between h-16 px-4 border-b border-white/10">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                    <img src="/images/logo-pln.png" alt="Logo" width="24" height="24" class="w-6 h-6 object-contain">
+                    <img src="/images/logo-pln-no-bg.png" alt="Logo" width="24" height="24" class="w-6 h-6 object-contain">
                     <div>
                         <span class="font-bold text-white text-lg">SIPLIN</span>
                         <p class="text-[10px] text-white/60 -mt-1">Menu Aplikasi</p>
@@ -198,7 +198,7 @@
                     
                     <!-- Logos -->
                     <div class="flex items-center gap-3">
-                        <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN" width="40" height="40" class="h-10 w-auto object-contain cursor-help" onerror="this.style.display='none'" title="Logo PLN">
+                        <img src="{{ asset('images/logo-pln-no-bg.png') }}" alt="Logo PLN" width="40" height="40" class="h-10 w-auto object-contain cursor-help" onerror="this.style.display='none'" title="Logo PLN">
                         <div class="border-l pl-3 hidden sm:block cursor-help" style="border-color: var(--border-color);" title="SIPLIN v{{ config('app.version', '1.0.0') }} - Sistem Inventaris Barang PLN ULP Cilacap.">
                             <h1 class="text-sm font-semibold" style="color: var(--text-primary);">Sistem Inventaris Barang</h1>
                             <p class="text-xs" style="color: var(--text-secondary);">PLN ULP Cilacap</p>

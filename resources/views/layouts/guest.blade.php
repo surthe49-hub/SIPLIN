@@ -65,7 +65,7 @@
         <!-- Logo -->
         <div class="mb-6">
             <a href="/" class="flex items-center gap-3">
-                <img src="/images/logo-pbj-kalbar.png" alt="Logo" class="w-12 h-12 object-contain">
+                <img src="/images/logo-pln.png" alt="Logo" class="w-12 h-12 object-contain">
                 <span class="text-xl font-bold text-gray-900">Inventaris Barang</span>
             </a>
         </div>
