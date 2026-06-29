@@ -1,4 +1,4 @@
-@section('meta-description', 'Daftar lengkap barang inventaris dengan detail kategori, lokasi, kondisi, dan tracking perpindahan. Kelola aset perusahaan dengan mudah.')
+@section('meta-description', 'Daftar lengkap barang inventaris dengan detail kategori, lokasi, kondisi, dan tracking perpindahan. Kelola aset PLN dengan mudah.')
 <x-app-layout title="Daftar Barang">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
@@ -82,7 +82,7 @@
                         <th class="w-32">Kategori</th>
                         <th class="w-32">Lokasi</th>
                         <th class="w-28">Kondisi</th>
-                        <th class="w-32">Nilai</th>
+                        <th class="w-20 text-center">Jumlah</th>
                         <th class="w-36 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -93,8 +93,8 @@
                         <td class="font-mono text-xs">{{ $commodity->item_code }}</td>
                         <td>
                             <div class="flex items-center gap-3">
-                                <img src="{{ $commodity->primary_image_url }}" 
-                                     class="w-10 h-10 rounded object-cover bg-gray-100 cursor-pointer hover:opacity-80 transition" 
+                                <img src="{{ $commodity->primary_image_url }}"
+                                     class="w-10 h-10 rounded object-cover bg-gray-100 cursor-pointer hover:opacity-80 transition"
                                      alt="{{ $commodity->name }}"
                                      onclick="viewImage('{{ $commodity->primary_image_url }}', '{{ $commodity->name }}')">
                                 <div class="min-w-0">
@@ -112,7 +112,7 @@
                                 {{ $commodity->condition_label }}
                             </span>
                         </td>
-                        <td class="font-medium">{{ $commodity->formatted_price }}</td>
+                        <td class="text-center font-medium">{{ $commodity->quantity }}</td>
                         <td>
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('commodities.show', $commodity) }}" class="btn btn-sm btn-outline">
@@ -130,7 +130,7 @@
                     @empty
                     <tr>
                         <td colspan="8">
-                            <x-empty-state 
+                            <x-empty-state
                                 icon="box"
                                 title="Belum ada barang"
                                 description="Mulai dengan menambahkan barang inventaris pertama Anda"
@@ -156,11 +156,11 @@
             const form = document.getElementById('filterForm');
             const formData = new FormData(form);
             const params = new URLSearchParams();
-            
+
             for (const [key, value] of formData.entries()) {
                 if (value) params.append(key, value);
             }
-            
+
             window.location.href = form.action + '?' + params.toString();
         }
 
@@ -168,7 +168,7 @@
         function debounceSearch() {
             const spinner = document.getElementById('searchSpinner');
             if (spinner) spinner.classList.remove('hidden');
-            
+
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(() => {
                 submitFilter();

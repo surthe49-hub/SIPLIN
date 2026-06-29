@@ -28,8 +28,8 @@
                                 <x-form.input label="Nama Barang" name="name" :value="$commodity->name" required />
                             </div>
                             <div>
-                                <x-form.input label="Kode Barang" name="item_code" :value="$commodity->item_code" 
-                                              placeholder="Kode unik untuk barang ini" 
+                                <x-form.input label="Kode Barang" name="item_code" :value="$commodity->item_code"
+                                              placeholder="Kode unik untuk barang ini"
                                               style="font-family: 'Consolas', 'Monaco', 'Courier New', monospace;" />
                                 <p class="text-xs text-gray-500 mt-1">Kosongkan untuk generate otomatis</p>
                             </div>
@@ -52,11 +52,11 @@
                                         @endforeach
                                         <option value="custom" {{ old('location_id') == 'custom' ? 'selected' : '' }}>🏷️ Input Manual / Lainnya</option>
                                     </select>
-                                    
+
                                     <div id="customLocationInput" class="hidden">
-                                        <input type="text" name="custom_location" id="customLocation" 
-                                               placeholder="Contoh: Ruang Server Lt.3, Gudang Belakang, dll..." 
-                                               class="input w-full" 
+                                        <input type="text" name="custom_location" id="customLocation"
+                                               placeholder="Contoh: Ruang Server Lt.3, Gudang Belakang, dll..."
+                                               class="input w-full"
                                                value="{{ old('custom_location') }}">
                                         <p class="text-xs mt-1" style="color: var(--text-secondary);">Masukkan lokasi sesuai kebutuhan</p>
                                     </div>
@@ -71,35 +71,18 @@
                             <x-form.input label="Merk/Brand" name="brand" :value="$commodity->brand" />
                             <x-form.input label="Model/Tipe" name="model" :value="$commodity->model" />
                             <x-form.input label="Serial Number" name="serial_number" :value="$commodity->serial_number" />
-                            <x-form.input label="Penanggung Jawab" name="responsible_person" :value="$commodity->responsible_person" />
                         </div>
                     </div>
                 </div>
 
-                <!-- Detail Perolehan -->
+                <!-- Detail Barang (disederhanakan) -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="font-semibold text-gray-900">Detail Perolehan</h3>
+                        <h3 class="font-semibold text-gray-900">Detail Barang</h3>
                     </div>
                     <div class="card-body">
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                            <x-form.select label="Cara Perolehan" name="acquisition_type" :value="$commodity->acquisition_type" required :options="[
-                                'pembelian' => 'Pembelian',
-                                'hibah' => 'Hibah',
-                                'bantuan' => 'Bantuan',
-                                'produksi' => 'Produksi Sendiri',
-                                'lainnya' => 'Lainnya'
-                            ]" />
-                            <x-form.input label="Sumber Perolehan" name="acquisition_source" :value="$commodity->acquisition_source" />
-                            <x-form.input label="Tahun Perolehan" name="purchase_year" type="number" :value="$commodity->purchase_year" />
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Harga Perolehan</label>
-                                <div class="relative">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">Rp</span>
-                                    <input type="text" id="purchase_price_display" class="input pl-10" placeholder="0" oninput="formatRupiahInput(this, 'purchase_price')">
-                                    <input type="hidden" name="purchase_price" id="purchase_price" value="{{ old('purchase_price', $commodity->purchase_price ?? 0) }}">
-                                </div>
-                            </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                            <x-form.input label="Tahun Perolehan" name="purchase_year" type="number" min="1900" max="{{ date('Y') }}" :value="$commodity->purchase_year" />
                             <x-form.input label="Jumlah" name="quantity" type="number" min="1" :value="$commodity->quantity" required />
                             <x-form.select label="Kondisi" name="condition" :value="$commodity->condition" required :options="[
                                 'baik' => 'Baik',
@@ -168,12 +151,11 @@
 
     @push('scripts')
     <script>
-        // Toggle custom location input
         function toggleCustomLocation() {
             const select = document.getElementById('locationSelect');
             const customInput = document.getElementById('customLocationInput');
             const customField = document.getElementById('customLocation');
-            
+
             if (select.value === 'custom') {
                 customInput.classList.remove('hidden');
                 customField.setAttribute('required', 'required');
@@ -185,9 +167,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            initRupiahDisplay('purchase_price_display', 'purchase_price');
-            
-            // Initialize custom location toggle
             toggleCustomLocation();
         });
     </script>

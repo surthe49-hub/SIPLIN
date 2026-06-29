@@ -227,14 +227,14 @@
         <div class="rounded-2xl p-8 mb-8 border" style="background-color: var(--bg-card); border-color: var(--border-color);">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 
-                <!-- Ferdi Card -->
+                <!-- Rafi & Izma Card -->
                 <div>
                     <div class="flex items-center gap-4 mb-4">
                         <div class="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-white" style="background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);">
                             F
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold" style="color: var(--text-primary);">Ferdi</h3>
+                            <h3 class="text-xl font-bold" style="color: var(--text-primary);">Rafi & Izma</h3>
                             <p class="text-sm" style="color: var(--text-secondary);">Developer & Author</p>
                         </div>
                     </div>

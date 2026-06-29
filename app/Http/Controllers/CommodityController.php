@@ -30,8 +30,6 @@ class CommodityController extends Controller implements HasMiddleware
             new Middleware('permission:commodities.create', only: ['create', 'store']),
             new Middleware('permission:commodities.edit', only: ['edit', 'update']),
             new Middleware('permission:commodities.delete', only: ['destroy']),
-            // new Middleware('permission:commodities.export', only: ['export']), // DEBUG: disabled
-            // previewCode dibiarkan tanpa middleware untuk debugging
         ];
     }
 
@@ -73,7 +71,7 @@ class CommodityController extends Controller implements HasMiddleware
         $sortDirection = $request->get('direction', 'desc');
         $query->orderBy($sortField, $sortDirection);
 
-        $perPage = min($request->get('per_page', 15), 100); // Max 100 per page
+        $perPage = min($request->get('per_page', 15), 100);
         $commodities = $query->paginate($perPage)->withQueryString();
         $categories = Category::active()->orderBy('name')->get();
         $locations = Location::active()->orderBy('name')->get();
@@ -94,6 +92,9 @@ class CommodityController extends Controller implements HasMiddleware
 
     /**
      * Simpan barang baru.
+     * NOTE: Field acquisition_type, acquisition_source, purchase_price, responsible_person
+     * tidak ditampilkan di UI (disederhanakan untuk PLN ULP Cilacap).
+     * Default value di-set otomatis di controller.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -101,7 +102,7 @@ class CommodityController extends Controller implements HasMiddleware
             'name' => ['required', 'string', 'max:255'],
             'item_code' => ['nullable', 'string', 'max:50', 'unique:commodities,item_code'],
             'category_id' => ['required', 'exists:categories,id'],
-            'location_id' => ['required', function($attribute, $value, $fail) {
+            'location_id' => ['required', function ($attribute, $value, $fail) {
                 if ($value !== 'custom' && !\App\Models\Location::where('id', $value)->exists()) {
                     $fail('Lokasi yang dipilih tidak valid.');
                 }
@@ -110,24 +111,27 @@ class CommodityController extends Controller implements HasMiddleware
             'brand' => ['nullable', 'string', 'max:255'],
             'model' => ['nullable', 'string', 'max:255'],
             'serial_number' => ['nullable', 'string', 'max:255'],
-            'acquisition_type' => ['required', 'in:pembelian,hibah,bantuan,produksi,lainnya'],
+            // Field-field di bawah dibuat nullable - tidak ditampilkan di form lagi
+            'acquisition_type' => ['nullable', 'in:pembelian,hibah,bantuan,produksi,lainnya'],
             'acquisition_source' => ['nullable', 'string', 'max:255'],
+            'purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'responsible_person' => ['nullable', 'string', 'max:255'],
+            // Field yang masih ditampilkan
             'quantity' => ['required', 'integer', 'min:1'],
             'condition' => ['required', 'in:baik,rusak_ringan,rusak_berat'],
             'purchase_year' => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
-            'purchase_price' => ['nullable', 'numeric', 'min:0'],
             'specifications' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
-            'responsible_person' => ['nullable', 'string', 'max:255'],
             'images.*' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $validated['created_by'] = Auth::id();
+        // Set default untuk field yang sudah tidak ditampilkan di UI
+        $validated['acquisition_type'] = $validated['acquisition_type'] ?? 'pembelian';
         $validated['purchase_price'] = $validated['purchase_price'] ?? 0;
 
         // Handle custom location
         if ($validated['location_id'] === 'custom') {
-            // Create new location from custom input
             $location = \App\Models\Location::create([
                 'name' => $validated['custom_location'],
                 'code' => 'LOC-' . strtoupper(\Illuminate\Support\Str::random(6)),
@@ -137,8 +141,7 @@ class CommodityController extends Controller implements HasMiddleware
             ]);
             $validated['location_id'] = $location->id;
         }
-        
-        // Remove custom_location from validated data
+
         unset($validated['custom_location']);
 
         try {
@@ -157,8 +160,6 @@ class CommodityController extends Controller implements HasMiddleware
                 }
             }
 
-            // Activity logged;
-
             // Send notification to all admin users
             $adminUsers = User::where('role', 'admin')->get();
             Notification::send($adminUsers, new CommodityCreated($commodity, Auth::user()));
@@ -166,10 +167,9 @@ class CommodityController extends Controller implements HasMiddleware
             return redirect()->route('commodities.show', $commodity)
                 ->with('success', 'Barang berhasil ditambahkan.');
         } catch (\Illuminate\Database\QueryException $e) {
-            // Handle unique constraint violation
-            if ($e->errorInfo[1] == 1062) { // MySQL duplicate entry error
+            if ($e->errorInfo[1] == 1062) {
                 return back()->with('error', 'Kode barang sudah digunakan. Sistem akan generate kode baru otomatis.')
-                            ->withInput(['item_code' => '']); // Clear item_code to trigger auto-generation
+                    ->withInput(['item_code' => '']);
             }
 
             return back()->with('error', 'Terjadi kesalahan database. Silakan coba lagi.')->withInput();
@@ -212,6 +212,8 @@ class CommodityController extends Controller implements HasMiddleware
 
     /**
      * Update barang.
+     * Field yang tidak di form (acquisition_type, purchase_price, dll) tidak akan
+     * di-overwrite - nilai existing dipertahankan.
      */
     public function update(Request $request, Commodity $commodity): RedirectResponse
     {
@@ -219,7 +221,7 @@ class CommodityController extends Controller implements HasMiddleware
             'name' => ['required', 'string', 'max:255'],
             'item_code' => ['nullable', 'string', 'max:50', 'unique:commodities,item_code,' . $commodity->id],
             'category_id' => ['required', 'exists:categories,id'],
-            'location_id' => ['required', function($attribute, $value, $fail) {
+            'location_id' => ['required', function ($attribute, $value, $fail) {
                 if ($value !== 'custom' && !\App\Models\Location::where('id', $value)->exists()) {
                     $fail('Lokasi yang dipilih tidak valid.');
                 }
@@ -228,15 +230,17 @@ class CommodityController extends Controller implements HasMiddleware
             'brand' => ['nullable', 'string', 'max:255'],
             'model' => ['nullable', 'string', 'max:255'],
             'serial_number' => ['nullable', 'string', 'max:255'],
-            'acquisition_type' => ['required', 'in:pembelian,hibah,bantuan,produksi,lainnya'],
+            // Field-field nullable - kalau tidak dikirim form, nilai existing dipertahankan
+            'acquisition_type' => ['nullable', 'in:pembelian,hibah,bantuan,produksi,lainnya'],
             'acquisition_source' => ['nullable', 'string', 'max:255'],
+            'purchase_price' => ['nullable', 'numeric', 'min:0'],
+            'responsible_person' => ['nullable', 'string', 'max:255'],
+            // Field yang masih ditampilkan
             'quantity' => ['required', 'integer', 'min:1'],
             'condition' => ['required', 'in:baik,rusak_ringan,rusak_berat'],
             'purchase_year' => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],
-            'purchase_price' => ['nullable', 'numeric', 'min:0'],
             'specifications' => ['nullable', 'string'],
             'notes' => ['nullable', 'string'],
-            'responsible_person' => ['nullable', 'string', 'max:255'],
             'images.*' => ['nullable', 'image', 'max:2048'],
             'delete_images' => ['nullable', 'array'],
             'delete_images.*' => ['exists:commodity_images,id'],
@@ -244,11 +248,18 @@ class CommodityController extends Controller implements HasMiddleware
         ]);
 
         $validated['updated_by'] = Auth::id();
-        $validated['purchase_price'] = $validated['purchase_price'] ?? 0;
+
+        // Untuk field yang TIDAK ada di form edit, jangan overwrite nilai existing.
+        // Kalau request tidak kirim field tersebut, hapus dari $validated supaya
+        // Eloquent update() tidak menyentuh kolom itu di DB.
+        foreach (['acquisition_type', 'acquisition_source', 'purchase_price', 'responsible_person'] as $hiddenField) {
+            if (!$request->has($hiddenField)) {
+                unset($validated[$hiddenField]);
+            }
+        }
 
         // Handle custom location
         if ($validated['location_id'] === 'custom') {
-            // Create new location from custom input
             $location = \App\Models\Location::create([
                 'name' => $validated['custom_location'],
                 'code' => 'LOC-' . strtoupper(\Illuminate\Support\Str::random(6)),
@@ -258,11 +269,8 @@ class CommodityController extends Controller implements HasMiddleware
             ]);
             $validated['location_id'] = $location->id;
         }
-        
-        // Remove custom_location from validated data
-        unset($validated['custom_location']);
 
-        $oldValues = $commodity->toArray();
+        unset($validated['custom_location']);
 
         // Delete selected images
         if ($request->filled('delete_images')) {
@@ -298,8 +306,6 @@ class CommodityController extends Controller implements HasMiddleware
         unset($validated['images'], $validated['delete_images'], $validated['primary_image']);
         $commodity->update($validated);
 
-        // Activity logged;
-
         return redirect()->route('commodities.show', $commodity)
             ->with('success', 'Barang berhasil diperbarui.');
     }
@@ -309,15 +315,11 @@ class CommodityController extends Controller implements HasMiddleware
      */
     public function destroy(Commodity $commodity): RedirectResponse
     {
-        // Cek apakah punya transfer pending
         if ($commodity->transfers()->whereIn('status', ['pending', 'approved'])->exists()) {
             return back()->with('error', 'Barang tidak bisa dihapus karena masih memiliki transfer yang belum selesai.');
         }
 
-        // Soft delete (gambar tidak dihapus)
         $commodity->delete();
-
-        // Activity logged;
 
         return redirect()->route('commodities.index')
             ->with('success', 'Barang berhasil dihapus.');
@@ -330,7 +332,7 @@ class CommodityController extends Controller implements HasMiddleware
     {
         $categoryId = $request->input('category_id');
         $code = Commodity::previewItemCode($categoryId ? (int) $categoryId : null);
-        
+
         return response()->json([
             'code' => $code,
             'category_id' => $categoryId,
@@ -342,7 +344,6 @@ class CommodityController extends Controller implements HasMiddleware
      */
     public function export(Request $request)
     {
-        // Simple version - minimal filtering  
         $commodities = Commodity::withRelations()->orderBy('name')->get();
 
         $pdf = Pdf::loadView('reports.pdf.inventory', [

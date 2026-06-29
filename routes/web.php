@@ -205,8 +205,35 @@ Route::middleware('auth')->group(function () {
         Route::get('kib', [ReportController::class, 'kib'])->name('reports.kib');
     });
 
-  
-   
+    // ========================================
+    // ADMIN (Pengguna, Kode Referral)
+    // ========================================
+    Route::prefix('admin')->group(function () {
+        // Pengguna (Users)
+        Route::resource('pengguna', UserController::class)->names([
+            'index' => 'users.index',
+            'create' => 'users.create',
+            'store' => 'users.store',
+            'show' => 'users.show',
+            'edit' => 'users.edit',
+            'update' => 'users.update',
+            'destroy' => 'users.destroy',
+        ])->parameters(['pengguna' => 'user']);
+
+      // ========================================
+// USER MANAGEMENT
+// ========================================
+
+Route::resource('users', UserController::class)->names([
+    'index'   => 'users.index',
+    'create'  => 'users.create',
+    'store'   => 'users.store',
+    'show'    => 'users.show',
+    'edit'    => 'users.edit',
+    'update'  => 'users.update',
+    'destroy' => 'users.destroy',
+]);
+    });
 
     // About Page
     Route::get('about', fn() => view('about'))->name('about');

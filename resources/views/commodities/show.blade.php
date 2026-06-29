@@ -70,43 +70,16 @@
                             <dd class="font-medium font-mono">{{ $commodity->serial_number ?? '-' }}</dd>
                         </div>
                         <div>
-                            <dt class="text-sm text-gray-500">Kondisi</dt>
-                            <dd><span class="badge {{ $commodity->condition_badge_class }}">{{ $commodity->condition_label }}</span></dd>
+                            <dt class="text-sm text-gray-500">Tahun Perolehan</dt>
+                            <dd class="font-medium">{{ $commodity->purchase_year ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-gray-500">Jumlah</dt>
                             <dd class="font-medium">{{ $commodity->quantity }} unit</dd>
                         </div>
                         <div>
-                            <dt class="text-sm text-gray-500">Penanggung Jawab</dt>
-                            <dd class="font-medium">{{ $commodity->responsible_person ?? '-' }}</dd>
-                        </div>
-                    </dl>
-                </div>
-            </div>
-
-            <!-- Acquisition Info -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="font-semibold text-gray-900">Informasi Perolehan</h3>
-                </div>
-                <div class="card-body">
-                    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <dt class="text-sm text-gray-500">Cara Perolehan</dt>
-                            <dd class="font-medium">{{ $commodity->acquisition_type_label }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm text-gray-500">Sumber Perolehan</dt>
-                            <dd class="font-medium">{{ $commodity->acquisition_source ?? '-' }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm text-gray-500">Tahun Perolehan</dt>
-                            <dd class="font-medium">{{ $commodity->purchase_year ?? '-' }}</dd>
-                        </div>
-                        <div>
-                            <dt class="text-sm text-gray-500">Harga Perolehan</dt>
-                            <dd class="font-medium">{{ $commodity->formatted_price }}</dd>
+                            <dt class="text-sm text-gray-500">Kondisi</dt>
+                            <dd><span class="badge {{ $commodity->condition_badge_class }}">{{ $commodity->condition_label }}</span></dd>
                         </div>
                     </dl>
                 </div>
