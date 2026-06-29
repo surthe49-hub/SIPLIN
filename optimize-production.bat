@@ -1,8 +1,8 @@
 @echo off
-REM SIBARANG Production Optimization Script (Windows)
+REM SIPLIN Production Optimization Script (Windows)
 REM Run this after deployment to production
 
-echo 🚀 Optimizing SIBARANG for Production...
+echo 🚀 Optimizing SIPLIN for Production...
 
 REM Clear all caches first
 echo 📋 Clearing existing caches...

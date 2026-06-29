@@ -1,8 +1,8 @@
-# 🚀 SIBARAKU - Panduan Deployment
+# 🚀 SIPLIN - Panduan Deployment
 
 **Versi: v1.2.0-stable**
 
-Dokumen ini berisi instruksi terperinci tentang cara men-deploy SIBARAKU di berbagai lingkungan.
+Dokumen ini berisi instruksi terperinci tentang cara men-deploy SIPLIN di berbagai lingkungan.
 
 ---
 
@@ -24,7 +24,7 @@ Dokumen ini berisi instruksi terperinci tentang cara men-deploy SIBARAKU di berb
 
 ## 🎯 Mode Environment
 
-SIBARAKU mendukung 4 mode environment. Lihat `.env.example` untuk konfigurasi lengkap.
+SIPLIN mendukung 4 mode environment. Lihat `.env.example` untuk konfigurasi lengkap.
 
 ```
 ┌─────────────────┬────────────────────────────────────────────────────────┐
@@ -61,7 +61,7 @@ SIBARAKU mendukung 4 mode environment. Lihat `.env.example` untuk konfigurasi le
 ### Langkah-langkah Umum
 1. Clone repositori:
    ```bash
-   git clone https://github.com/risunCode/SIBARAKU-Laravel.git sibaraku
+   git clone https://github.com/risunCode/SIPLIN-Laravel.git sibaraku
    cd sibaraku
    ```
 
@@ -483,7 +483,7 @@ Tambahkan ke crontab:
 
 Jika mengalami masalah dengan deployment, hubungi tim support:
 - Email: support@sibaraku.example.com
-- Issues: [GitHub Issues](https://github.com/risunCode/SIBARAKU-Laravel/issues)
+- Issues: [GitHub Issues](https://github.com/risunCode/SIPLIN-Laravel/issues)
 
 ---
 

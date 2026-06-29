@@ -1,4 +1,4 @@
-# SIBARAKU - Sistem Inventaris Barang Kabupaten Kubu Raya
+# SIPLIN - Sistem Inventaris Barang Kabupaten Kubu Raya
 
 ![Laravel](https://img.shields.io/badge/Laravel-12.40.1-red?style=flat-square&logo=laravel)
 ![PHP](https://img.shields.io/badge/PHP-8.3-purple?style=flat-square&logo=php)
@@ -12,7 +12,7 @@ Sistem manajemen inventaris barang berbasis web untuk instansi pemerintah, BUMN/
 ## ⚡ Quick Start
 
 ```bash
-git clone https://github.com/risunCode/SIBARAKU-Laravel.git sibaraku
+git clone https://github.com/risunCode/SIPLIN-Laravel.git sibaraku
 cd sibaraku
 composer install && npm install
 cp .env.example .env && php artisan key:generate
@@ -80,7 +80,7 @@ npm run build && php artisan serve
 
 ## 📊 Struktur Database
 
-<img width="800" alt="ERD SIBARAKU" src="https://github.com/user-attachments/assets/94ea2684-844c-4374-a587-959d1bdb57aa" />
+<img width="800" alt="ERD SIPLIN" src="https://github.com/user-attachments/assets/94ea2684-844c-4374-a587-959d1bdb57aa" />
 
 **17 Tabel:** users, categories, locations, commodities, commodity_images, transfers, maintenances, disposals, activity_logs, notifications, referral_codes, dll.
 
@@ -113,7 +113,7 @@ Proyek ini dilisensikan di bawah [GPL-3.0 License](LICENSE).
 
 ## ℹ️ Catatan Nama
 
-**SIBARAKU** (Sistem Inventaris Barang Kubu Raya) adalah nama terbaru dari sistem ini. Sebelumnya bernama SIBARANG, diubah untuk menghindari konflik dengan proyek lain yang sudah ada.
+**SIPLIN** (Sistem Inventaris Barang Kubu Raya) adalah nama terbaru dari sistem ini. Sebelumnya bernama SIPLIN, diubah untuk menghindari konflik dengan proyek lain yang sudah ada.
 
 ---
 

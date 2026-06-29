@@ -1,7 +1,7 @@
 {
-    "name": "sibaraku",
+    "name": "siplin",
     "version": "1.2.0",
-    "description": "SIBARAKU - Sistem Inventaris Barang Kabupaten Kubu Raya",
+    "description": "SIPLIN - Sistem Inventaris Barang Kabupaten Kubu Raya",
     "private": true,
     "type": "module",
     "scripts": {

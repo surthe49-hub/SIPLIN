@@ -17,7 +17,7 @@ class DemoSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('🎭 Running SIBARAKU demo data installation...');
+        $this->command->info('🎭 Running SIPLIN demo data installation...');
 
         // Create referral codes
         $this->command->info('🎟️ Creating referral codes...');

@@ -1,4 +1,4 @@
-# CHANGELOG - SIBARAKU
+# CHANGELOG - SIPLIN
 **Sistem Inventaris Barang**
 
 ---
@@ -255,8 +255,8 @@ php artisan migrate:fresh --seed
 #### Configuration Updates
 - `composer.json` - Version: `1.0.0`
 - `package.json` - Version: `1.0.0`
-- `config/sibarang.php` - Version: `1.0.0`
-- `app/Helpers/sibarang.php` - Default version: `1.0.0`
+- `config/siplin.php` - Version: `1.0.0`
+- `app/Helpers/siplin.php` - Default version: `1.0.0`
 - `resources/views/about.blade.php` - Version badge: `v1.0.0`
 - `README.md` - Version header: `v1.0.0`
 
@@ -584,7 +584,7 @@ Routes reorganized with prefix grouping for better organization:
 
 #### Clean Production Install
 ```bash
-git clone https://github.com/risunCode/SIBARAKU-Laravel.git sibaraku
+git clone https://github.com/risunCode/SIPLIN-Laravel.git sibaraku
 cd your-inventory && composer install && npm install
 cp .env.example .env && php artisan key:generate
 php artisan migrate:fresh --seed
@@ -608,7 +608,7 @@ php artisan db:seed --class=DemoSeeder
 
 ---
 
-**SIBARAKU v1.0.0 is now stable and production-ready with comprehensive UI/UX enhancements, security-first database structure, and complete feature set!** 🎉
+**SIPLIN v1.0.0 is now stable and production-ready with comprehensive UI/UX enhancements, security-first database structure, and complete feature set!** 🎉
 
 ---
 

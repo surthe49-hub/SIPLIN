@@ -49,7 +49,7 @@ trait RespondsWithJson
      */
     protected function featureEnabled(string $feature): bool
     {
-        return config("sibarang.features.{$feature}", true);
+        return config("siplin.features.{$feature}", true);
     }
 
     /**

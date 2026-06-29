@@ -7,21 +7,17 @@
 
     <title>{{ $title ?? 'Dashboard' }} - {{ config('app.name', 'Inventaris Barang') }}</title>
     
-    <!-- Meta Description -->
     <meta name="description" content="@yield('meta-description', 'Sistem inventaris barang untuk mengelola aset perusahaan dengan mudah dan efisien. Lacak, kelola, dan pantau semua barang inventaris dalam satu platform.')">
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @stack('styles')
 </head>
 <body class="font-sans antialiased bg-gray-50" x-data="{ sidebarOpen: false }">
     <div class="min-h-screen">
-        <!-- Mobile Sidebar Backdrop -->
         <div x-show="sidebarOpen" 
              x-transition:enter="transition-opacity ease-linear duration-300"
              x-transition:enter-start="opacity-0"
@@ -33,17 +29,14 @@
              @click="sidebarOpen = false">
         </div>
 
-        <!-- Sidebar -->
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
                class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-auto">
             
-            <!-- Logo -->
             <div class="flex items-center gap-3 h-16 px-6 border-b border-gray-200">
                 <img src="/images/logo-pbj-kalbar.png" alt="Logo" class="w-8 h-8 object-contain">
                 <span class="font-semibold text-gray-900">Inventaris</span>
             </div>
 
-            <!-- Navigation -->
             <nav class="p-4 space-y-1">
                 <a href="{{ route('dashboard') }}" 
                    class="sidebar-link {{ request()->routeIs('dashboard') ? 'sidebar-link-active' : '' }}">
@@ -153,26 +146,20 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <div class="lg:pl-64">
-            <!-- Top Navigation -->
             <header class="sticky top-0 z-30 bg-white border-b border-gray-200">
                 <div class="flex items-center justify-between h-16 px-4 sm:px-6">
-                    <!-- Mobile menu button - Only on mobile -->
                     <button @click="sidebarOpen = true" class="block lg:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
 
-                    <!-- Page Title (Desktop) -->
                     <h1 class="hidden lg:block text-lg font-semibold text-gray-900">
                         {{ $header ?? ($title ?? 'Dashboard') }}
                     </h1>
 
-                    <!-- Right side -->
                     <div class="flex items-center gap-3">
-                        <!-- Create Referral Code Button -->
                         @can('referral-codes.create')
                         <button onclick="openCreateReferralModal()" class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-white transition-colors" style="background-color: var(--accent-color);">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,10 +180,8 @@
                             @endif
                         @endcan
 
-                        <!-- Notifications -->
                         <x-notification-bell />
 
-                        <!-- User dropdown -->
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100">
                                 <img src="{{ auth()->user()->avatar_url }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-full object-cover">
@@ -206,7 +191,7 @@
                                 </svg>
                             </button>
 
-                            <div x-show="open" 
+                            <div x-show="open"
                                  @click.away="open = false"
                                  x-transition
                                  class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1">
@@ -222,23 +207,24 @@
                                     Kode Referral Saya
                                 </a>
                                 @endcan
-                                <button type="button" class="logout-button w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                                    Keluar
-                                </button>
+
+                                <form method="POST" action="{{ route('logout') }}" class="block">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                        Keluar
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Page Title (Mobile) -->
                 <div class="lg:hidden px-4 pb-3">
                     <h1 class="text-lg font-semibold text-gray-900">{{ $header ?? ($title ?? 'Dashboard') }}</h1>
                 </div>
             </header>
 
-            <!-- Page Content -->
             <main class="p-4 sm:p-6">
-                <!-- Flash Messages -->
                 @if (session('success'))
                     <x-alert type="success" :message="session('success')" class="mb-4" />
                 @endif
@@ -258,7 +244,6 @@
 
     @stack('scripts')
     
-    <!-- Global Scripts -->
     <script>
         // Global function to open referral create modal from top navigation
         function openCreateReferralModal() {

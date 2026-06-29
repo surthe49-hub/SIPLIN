@@ -1,11 +1,11 @@
 -- ============================================================
--- SIBARAKU - Sistem Inventaris Barang Kabupaten Kubu Raya
+-- SIPLIN - Sistem Inventaris Barang Kabupaten Kubu Raya
 -- Full Database Schema
 -- Version: 1.2.0-stable
 -- Generated: November 30, 2025
 -- ============================================================
 -- 
--- This SQL file contains the complete database schema for SIBARAKU.
+-- This SQL file contains the complete database schema for SIPLIN.
 -- Compatible with MySQL 8.0+ / MariaDB 10.6+
 --
 -- Usage:
@@ -534,7 +534,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 COMMIT;
 
 -- ============================================================
--- END OF SIBARAKU DATABASE SCHEMA
+-- END OF SIPLIN DATABASE SCHEMA
 -- ============================================================
 -- 
 -- Summary of Tables:

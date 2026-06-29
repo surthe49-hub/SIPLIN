@@ -10,11 +10,11 @@
             <div class="bg-white border-b border-gray-200 px-6 py-6">
                 <div class="text-center">
                     <div class="flex items-center justify-center gap-3 mb-4">
-                        <img src="{{ asset('images/logo-kab.png') }}" alt="Logo Kabupaten" class="h-8 w-auto" onerror="this.style.display='none'">
+                        <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN" class="h-8 w-auto" onerror="this.style.display='none'">
                     </div>
                     <h1 class="text-xl font-bold text-gray-900 mb-1">VERIFIKASI LAPORAN DIGITAL</h1>
                     <p class="text-sm text-gray-600">Sistem Inventaris Barang</p>
-                    <p class="text-xs text-gray-500">Dinas Perumahan dan Kawasan Permukiman</p>
+                    <p class="text-xs text-gray-500">PLN ULP Cilacap</p>
                 </div>
             </div>
 

@@ -9,7 +9,7 @@
         <div class="border border-gray-300 px-6 py-4 mb-4">
             <div class="text-center">
                 <div class="flex items-center justify-center gap-3 mb-3">
-                    <img src="{{ asset('images/logo-kab.png') }}" alt="Logo Kabupaten" class="h-8 w-auto" onerror="this.style.display='none'">
+                    <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN" class="h-8 w-auto" onerror="this.style.display='none'">
                 </div>
                 <h1 class="text-xl font-bold mb-1">HASIL VERIFIKASI LAPORAN</h1>
                 <p class="text-sm">Sistem Inventaris Barang</p>

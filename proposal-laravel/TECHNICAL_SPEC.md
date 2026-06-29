@@ -1,4 +1,4 @@
-# 📦 SIBARAKU - Technical Specification
+# 📦 SIPLIN - Technical Specification
 ## Complete Implementation Reference for Cloning
 
 **Version: 1.0.0** | ✅ Production Ready | 🎯 v1.0.0 Stable
@@ -11,7 +11,7 @@
 
 ## 🎯 Overview
 
-### SIBARAKU - Sistem Inventaris Barang Kabupaten Kubu Raya
+### SIPLIN - Sistem Inventaris Barang Kabupaten Kubu Raya
 **Aplikasi inventaris barang berbasis web yang lengkap dan production-ready** untuk instansi pemerintah, BUMN/BUMD, dan perusahaan swasta.
 
 ### ✅ Implementation Status: COMPLETED
@@ -367,7 +367,7 @@ inventaris-barang/
 │   │   └── Role.php                  # ✅ Implemented
 │   │
 │   ├── Helpers/
-│   │   └── sibarang.php              # ✅ Helper functions
+│   │   └── siplin.php              # ✅ Helper functions
 │   │
 │   ├── Http/
 │   │   ├── Controllers/
@@ -421,7 +421,7 @@ inventaris-barang/
 │       └── TransferObserver.php               # ✅ Implemented
 │
 ├── config/
-│   ├── sibarang.php              # ✅ System configuration
+│   ├── siplin.php              # ✅ System configuration
 │   ├── security_questions.php   # ✅ Security questions
 │   └── inventory.php             # ✅ Inventory settings
 │
@@ -539,7 +539,7 @@ inventaris-barang/
 │
 ├── public/
 │   ├── images/
-│   │   ├── logo-kab.png              # ✅ Main logo
+│   │   ├── logo-pln.png              # ✅ Main logo
 │   │   └── logo-pbj-kalbar.png       # ✅ Secondary logo
 │   └── print.css                     # ✅ Print stylesheet
 │
@@ -722,7 +722,7 @@ Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsR
 ### Quick Clone & Setup (5 Minutes)
 ```bash
 # 1. Clone Repository
-git clone https://github.com/risunCode/SIBARAKU-Laravel.git sibaraku
+git clone https://github.com/risunCode/SIPLIN-Laravel.git sibaraku
 cd sibaraku
 
 # 2. Install Dependencies
@@ -789,7 +789,7 @@ DB_PASSWORD=
 ## 🔧 Customization Ready
 
 ### Organization Branding
-Edit `config/sibarang.php`:
+Edit `config/siplin.php`:
 ```php
 return [
     'name' => 'YOUR_SYSTEM_NAME',
@@ -804,7 +804,7 @@ return [
 
 ### Logo Customization
 Replace files in `public/images/`:
-- `logo-kab.png` → Your main logo
+- `logo-pln.png` → Your main logo
 - `logo-pbj-kalbar.png` → Your secondary logo
 
 ### Industry-Specific Configurations
@@ -861,7 +861,7 @@ Replace files in `public/images/`:
 
 ---
 
-**SIBARAKU is production-ready and fully implemented! Clone, customize, and deploy for your organization today.** 🎉
+**SIPLIN is production-ready and fully implemented! Clone, customize, and deploy for your organization today.** 🎉
 
 ---
 

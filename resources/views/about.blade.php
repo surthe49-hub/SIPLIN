@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="hidden lg:flex justify-center">
-                    <img src="/images/logo-pbj-kalbar.png" alt="Logo PBJ Kalbar" width="192" height="192" class="w-48 h-48 object-contain">
+                    <img src="/images/logo-pln.png" alt="Logo PLN" width="192" height="192" class="w-48 h-48 object-contain">
                 </div>
             </div>
         </div>
@@ -271,9 +271,9 @@
 
         <!-- App Info -->
         <div class="rounded-xl border p-6 text-center" style="background-color: var(--bg-card); border-color: var(--border-color);">
-            <h2 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">SIBARAKU</h2>
-            <p class="text-sm" style="color: var(--text-secondary);">Sistem Inventaris Barang Kabupaten Kubu Raya</p>
-            <p class="text-xs mt-1" style="color: var(--text-secondary);">Version {{ config('sibarang.version', '1.0.0') }}</p>
+            <h2 class="text-2xl font-bold mb-2" style="color: var(--text-primary);">SIPLIN</h2>
+           <p class="text-sm" style="color: var(--text-secondary);">Sistem Inventaris Barang PLN ULP Cilacap</p>
+            <p class="text-xs mt-1" style="color: var(--text-secondary);">Version {{ config('siplin.version', '1.0.0') }}</p>
         </div>
 
     </div>

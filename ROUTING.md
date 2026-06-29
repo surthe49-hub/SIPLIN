@@ -1,4 +1,4 @@
-# 🛣️ SIBARAKU - Routing Documentation
+# 🛣️ SIPLIN - Routing Documentation
 
 **Version: v1.0.0** | **Total Routes: 121** (94 Web + 27 API) | **Last Updated:** November 29, 2025
 

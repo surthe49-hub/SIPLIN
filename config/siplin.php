@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SIBARANG Configuration
+ * SIPLIN Configuration
  * 
  * Konfigurasi aplikasi Sistem Inventaris Barang
  * Dapat disesuaikan untuk kebutuhan instansi yang berbeda
@@ -13,7 +13,7 @@ return [
     | Application Info
     |--------------------------------------------------------------------------
     */
-    'name' => env('APP_DISPLAY_NAME', 'SIBARANG'),
+    'name' => env('APP_DISPLAY_NAME', 'SIPLIN'),
     'version' => '1.0.0',
     'description' => 'Sistem Inventaris Barang',
     'license' => 'GPL-3.0',

@@ -1,5 +1,5 @@
 -- ============================================================
--- SIBARAKU - Database Schema for DrawDB
+-- SIPLIN - Database Schema for DrawDB
 -- Version: 1.2.0-stable
 -- ============================================================
 

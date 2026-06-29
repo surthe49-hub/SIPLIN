@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# SIBARANG Production Optimization Script
+# SIPLIN Production Optimization Script
 # Run this after deployment to production
 
-echo "🚀 Optimizing SIBARANG for Production..."
+echo "🚀 Optimizing SIPLIN for Production..."
 
 # Clear all caches first
 echo "📋 Clearing existing caches..."

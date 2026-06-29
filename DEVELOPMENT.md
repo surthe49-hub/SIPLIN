@@ -1,4 +1,4 @@
-# 🛠️ SIBARANG - Development Guide
+# 🛠️ SIPLIN - Development Guide
 
 **For Developers & Contributors**
 
@@ -28,8 +28,8 @@
 ### Initial Setup
 ```bash
 # 1. Clone repository
-git clone https://github.com/risunCode/SIBARAKU-Laravel.git
-cd SIBARAKU-Laravel
+git clone https://github.com/risunCode/SIPLIN-Laravel.git
+cd SIPLIN-Laravel
 
 # 2. Install dependencies
 composer install
@@ -142,7 +142,7 @@ export default defineConfig({
 inventaris-barang/
 ├── app/
 │   ├── Enums/           # PHP Enums (AcquisitionType, ConditionType, etc.)
-│   ├── Helpers/         # Helper functions (sibarang.php)
+│   ├── Helpers/         # Helper functions (siplin.php)
 │   ├── Http/
 │   │   ├── Controllers/ # Route controllers
 │   │   ├── Middleware/  # Custom middleware
@@ -152,7 +152,7 @@ inventaris-barang/
 │   └── Observers/       # Model observers
 │
 ├── config/
-│   ├── sibarang.php     # System configuration
+│   ├── siplin.php     # System configuration
 │   ├── security_questions.php
 │   └── inventory.php
 │

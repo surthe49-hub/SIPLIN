@@ -19,24 +19,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function index(Request $request): Response
     {
-        $mode = 'login';
-        $referralCode = $request->query('ref', '');
-        
-        if ($referralCode) {
-            $mode = 'register';
+        // Mode default selalu login, register diakses via toggle di UI
+        $mode = $request->query('mode', 'login');
+        if (!in_array($mode, ['login', 'register'])) {
+            $mode = 'login';
         }
-        
-        // Prevent browser caching to ensure fresh CSRF tokens
+
         return response()
-            ->view('auth.index', compact('mode', 'referralCode'))
+            ->view('auth.index', compact('mode'))
             ->header('Cache-Control', 'no-cache, no-store, must-revalidate')
             ->header('Pragma', 'no-cache')
             ->header('Expires', '0');
     }
 
-    /**
-     * Tampilkan halaman login.
-     */
     public function create(): View
     {
         return view('auth.login');
@@ -52,49 +47,39 @@ class AuthenticatedSessionController extends Controller
             'password' => ['required'],
         ]);
 
-        // Sanitize email
         $credentials['email'] = strtolower(trim($credentials['email']));
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-
-            // Initialize session activity tracking
             $request->session()->put('last_activity', time());
-            
-            // Force save the new session to database before deleting old ones
             $request->session()->save();
 
-            // Logout dari device lain (double login protection - custom implementation)
+            // Logout dari device lain (double login protection)
             $currentSessionId = session()->getId();
             $userId = Auth::id();
-            
-            // Delete all other sessions for this user
-            $deletedCount = DB::table('sessions')
+            DB::table('sessions')
                 ->where('user_id', $userId)
                 ->where('id', '!=', $currentSessionId)
                 ->delete();
-                
-            
+
             // Cek apakah user aktif
             if (!Auth::user()->is_active) {
                 Auth::logout();
-                
-                // Log failed login (inactive account)
+
                 ActivityLog::create([
-                    'user_id' => Auth::id(),
+                    'user_id' => null,
                     'action' => 'login_failed',
                     'description' => 'Login gagal: Akun tidak aktif - ' . $credentials['email'],
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                     'created_at' => now(),
                 ]);
-                
+
                 return back()->withErrors([
                     'email' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.',
                 ]);
             }
 
-            // Log successful login
             ActivityLog::create([
                 'user_id' => Auth::id(),
                 'action' => 'login',
@@ -102,26 +87,17 @@ class AuthenticatedSessionController extends Controller
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
-            
-            // Update last login timestamp
+
             Auth::user()->update(['last_login_at' => now()]);
 
-            // Check if user needs to setup security question
-            $user = Auth::user();
-            if (!$user->security_setup_completed) {
-                return redirect()->route('security.setup')
-                    ->with('warning', 'Anda harus mengatur pertanyaan keamanan sebelum dapat menggunakan sistem.');
-            }
-
+            // LANGSUNG KE DASHBOARD, security setup di-skip
             return redirect()->intended(route('dashboard'))
-                ->with('success', 'Login berhasil! Sesi login dari perangkat lain telah ditutup untuk keamanan akun Anda.');
+                ->with('success', 'Login berhasil!');
         }
 
-        // Check if email exists but password is wrong
         $user = User::where('email', $credentials['email'])->first();
-        
+
         if ($user) {
-            // Log failed login (wrong password)
             ActivityLog::create([
                 'user_id' => $user->id,
                 'action' => 'login_failed',
@@ -131,7 +107,6 @@ class AuthenticatedSessionController extends Controller
                 'created_at' => now(),
             ]);
         } else {
-            // Log failed login (email not found)
             ActivityLog::create([
                 'user_id' => null,
                 'action' => 'login_failed',
@@ -148,11 +123,10 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Logout user.
+     * Logout user. Redirect ke HOMEPAGE (/), bukan /auth.
      */
     public function destroy(Request $request): RedirectResponse
     {
-        // Log logout
         if (Auth::check()) {
             ActivityLog::create([
                 'user_id' => Auth::id(),
@@ -164,10 +138,10 @@ class AuthenticatedSessionController extends Controller
         }
 
         Auth::guard('web')->logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Redirect ke homepage (/), bukan /auth
+        return redirect('/')->with('success', 'Anda telah logout.');
     }
 }

@@ -3,10 +3,10 @@ description: Repository Information Overview
 alwaysApply: true
 ---
 
-# SIBARANG - Sistem Inventaris Barang
+# SIPLIN - Sistem Inventaris Barang
 
 ## Summary
-SIBARANG (Sistem Inventaris Barang) v1.0.0 is an inventory management system designed for government institutions, BUMN/BUMD, and private companies. Built with Laravel 12, it provides comprehensive functionality for managing commodities, locations, transfers, maintenance, and disposals with a modern PHP/JavaScript stack.
+SIPLIN (Sistem Inventaris Barang) v1.0.0 is an inventory management system designed for government institutions, BUMN/BUMD, and private companies. Built with Laravel 12, it provides comprehensive functionality for managing commodities, locations, transfers, maintenance, and disposals with a modern PHP/JavaScript stack.
 
 ## Structure
 **Main Directories**:
@@ -117,7 +117,7 @@ php artisan view:cache
 
 **Configuration**:
 - **.env** - Environment variables (copy from .env.example)
-- **config/sibarang.php** - Application-specific settings
+- **config/siplin.php** - Application-specific settings
 - **config/security_questions.php** - Security question configuration
 - **vite.config.js** - Frontend build configuration
 

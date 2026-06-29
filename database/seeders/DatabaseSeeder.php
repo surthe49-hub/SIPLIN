@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('🔧 Running SIBARAKU production installation...');
+        $this->command->info('🔧 Running SIPLIN production installation...');
         
         $this->call([
             UserSeeder::class,        // Create admin user

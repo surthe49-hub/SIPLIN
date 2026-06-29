@@ -1,4 +1,4 @@
-# 📦 SIBARAKU - Panduan Instalasi
+# 📦 SIPLIN - Panduan Instalasi
 
 **Versi: v1.0.0-public**
 
@@ -18,7 +18,7 @@
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/risunCode/SIBARAKU-Laravel.git sibaraku
+git clone https://github.com/risunCode/SIPLIN-Laravel.git sibaraku
 cd sibaraku
 ```
 
@@ -36,7 +36,7 @@ php artisan key:generate
 
 Edit file `.env`:
 ```env
-APP_NAME="SIBARAKU - Sistem Inventaris Barang Kubu Raya"
+APP_NAME="SIPLIN - Sistem Inventaris Barang Kubu Raya"
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000

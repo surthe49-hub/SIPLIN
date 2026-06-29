@@ -20,12 +20,18 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
+| Public Routes (Bisa Diakses Semua Orang)
+|--------------------------------------------------------------------------
+*/
+// PERUBAHAN #1: Mengeluarkan route '/' dari middleware guest agar menjadi public route
+Route::get('/', fn() => view('home'))->name('home');
+
+/*
+|--------------------------------------------------------------------------
 | Guest Routes (Belum Login)
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    Route::get('/', fn() => redirect()->route('auth'));
-    
     // Auth Page (Login & Register)
     Route::get('auth', [AuthenticatedSessionController::class, 'index'])->name('auth');
     Route::get('login', fn() => redirect()->route('auth'))->name('login');
@@ -63,8 +69,9 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    // Logout
+    // PERUBAHAN #2: Menyediakan method POST dan GET untuk Logout agar mencegah error 419/kemudahan URL
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+    Route::get('logout', [AuthenticatedSessionController::class, 'destroy']);
 
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -75,7 +82,6 @@ Route::middleware('auth')->group(function () {
     Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
     Route::put('profile/security', [ProfileController::class, 'updateSecurity'])->name('profile.security');
 
-    
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notifications.mark-all-read');
@@ -203,9 +209,6 @@ Route::middleware('auth')->group(function () {
     // ADMIN (Pengguna, Kode Referral)
     // ========================================
     Route::prefix('admin')->group(function () {
-        // NOTE: Transfer routes moved to /transaksi/transfer to avoid duplication
-        // Access transfers via: /transaksi/transfer
-        
         // Pengguna (Users)
         Route::resource('pengguna', UserController::class)->names([
             'index' => 'users.index',
@@ -223,6 +226,7 @@ Route::middleware('auth')->group(function () {
                  ->middleware('permission:referral-codes.own')
                  ->name('referral-codes.index');
             
+            // Perbaikan penanganan store dengan permission
             Route::post('/', [ReferralCodeController::class, 'store'])
                  ->middleware('permission:referral-codes.create')
                  ->name('referral-codes.store');
@@ -251,7 +255,6 @@ Route::middleware('auth')->group(function () {
     // Session Status API (read-only check)
     Route::get('/api/session/status', function (Illuminate\Http\Request $request) {
         if (!auth()->check()) {
-            // Check if there was a previous session (has session cookie but no auth)
             $hasSessionCookie = $request->hasCookie(config('session.cookie'));
             $lastActivity = $request->session()->get('last_activity');
             
@@ -264,10 +267,8 @@ Route::middleware('auth')->group(function () {
         
         $session = $request->session();
         $lastActivity = $session->get('last_activity', time());
-        $lifetime = config('session.lifetime') * 60; // Convert minutes to seconds
+        $lifetime = config('session.lifetime') * 60;
         $remaining = $lifetime - (time() - $lastActivity);
-        
-        // Don't update last_activity here - only extend on explicit action
         
         return response()->json([
             'status' => 'active',
@@ -282,7 +283,6 @@ Route::middleware('auth')->group(function () {
             return response()->json(['status' => 'expired'], 401);
         }
         
-        // Update last activity to extend session
         $request->session()->put('last_activity', time());
         
         return response()->json([
