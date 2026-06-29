@@ -80,7 +80,7 @@
     <header class="bg-white shadow-sm border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 py-3">
             <div class="flex items-center justify-center gap-3">
-                <img src="{{ asset('images/logo-pln.png') }}" alt="Logo" class="h-10 w-auto">
+                <img src="{{ asset('images/logo-pln-no-bg.png') }}" alt="Logo" class="h-10 w-auto">
                 <div class="text-center">
                     <h1 class="text-lg font-bold text-gray-900">Sistem Inventaris Barang</h1>
                     <p class="text-xs text-gray-500">PLN ULP CILACAP</p>
@@ -196,7 +196,7 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-gray-500">
                 <div class="flex items-center gap-2">
-                    <img src="{{ asset('images/logo-pln.png') }}" alt="Logo" class="h-6 w-auto opacity-50">
+                    <img src="{{ asset('images/logo-pln-no-bg.png') }}" alt="Logo" class="h-6 w-auto opacity-50">
                     <span>&copy; {{ date('Y') }} Pemerintah Kabupaten Kubu Raya</span>
                 </div>
                 <div class="flex items-center gap-4">

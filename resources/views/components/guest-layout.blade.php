@@ -68,7 +68,7 @@
             
             <!-- Logo & Brand Header ULP Cilacap -->
             <div class="flex items-center gap-3 group">
-                <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN" class="h-9 w-auto transition-transform duration-500 group-hover:rotate-6">
+                <img src="{{ asset('images/logo-pln-no-bg.png') }}" alt="Logo PLN" class="h-9 w-auto transition-transform duration-500 group-hover:rotate-6">
                 <div>
                     <span class="font-bold text-slate-950 block leading-none tracking-tight text-base">{{ config('app.name') }}</span>
                     <span class="text-[10px] font-bold text-cyan-600 uppercase tracking-widest block mt-0.5">ULP Cilacap</span>
@@ -99,7 +99,7 @@
             <div class="relative z-10 text-center space-y-8 max-w-sm">
                 <!-- Glassmorphism Logo Wrapper -->
                 <div class="inline-block p-8 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl shadow-black/40 transform hover:scale-105 transition-transform duration-500">
-                    <img src="{{ asset('images/logo-pln.png') }}" alt="Logo PLN Utama" class="h-36 w-auto filter drop-shadow-[0_12px_24px_rgba(6,182,212,0.3)] select-none">
+                    <img src="{{ asset('images/logo-pln-no-bg.png') }}" alt="Logo PLN Utama" class="h-36 w-auto filter drop-shadow-[0_12px_24px_rgba(6,182,212,0.3)] select-none">
                 </div>
                 
                 <div class="space-y-3">
