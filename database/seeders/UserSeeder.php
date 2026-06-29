@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
         User::create([
             'name' => 'Administrator',
             'email' => 'admin@inventaris.com',
-            'password' => Hash::make('panelsibaraku'),
+            'password' => Hash::make('admin123'),
             'role' => 'admin',
             'is_active' => true,
             'security_setup_completed' => false,
