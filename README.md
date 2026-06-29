@@ -164,13 +164,10 @@ Lalu hard reload browser dengan `Ctrl+Shift+R`.
 
 ## Author
 
-**Muhammad Rafi Awallaisal**  
+**Muhammad Rafi Awallaisal & Izma Syabrian**  
 Magang — PLN ULP Cilacap  
 S1 Sistem Informasi, Telkom University Purwokerto
 
-**Izma Syabrian**
-Magang — PLN ULP Cilacap
-S1 Sistem Informasi, Telkom University Purwokerto
 ---
 
 ## License
