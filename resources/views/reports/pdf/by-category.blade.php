@@ -4,157 +4,139 @@
     <meta charset="utf-8">
     <title>{{ $title }}</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10pt;
-            line-height: 1.4;
-            color: #333;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 15px;
-        }
-        .header h1 {
-            font-size: 16pt;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .header p {
-            font-size: 10pt;
-            color: #666;
-        }
-        .meta {
-            margin-bottom: 15px;
-            font-size: 9pt;
-        }
-        .meta table {
-            width: 100%;
-        }
-        .meta td {
-            padding: 2px 0;
-        }
-        table.data {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        table.data th,
-        table.data td {
-            border: 1px solid #333;
-            padding: 6px 8px;
-            text-align: left;
-        }
-        table.data th {
-            background-color: #f0f0f0;
-            font-weight: bold;
-            font-size: 9pt;
-        }
-        table.data td {
-            font-size: 9pt;
-        }
-        table.data tr:nth-child(even) {
-            background-color: #fafafa;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .category-header {
-            background-color: #e9ecef !important;
-            font-weight: bold;
-            font-size: 10pt;
-        }
-        .summary {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-        }
-        .summary table {
-            width: 100%;
-        }
-        .summary td {
-            padding: 3px 0;
-        }
-        .summary .label {
-            font-weight: bold;
-        }
-        .signature-area {
-            margin-top: 50px;
-        }
-        .signature-line {
-            border-bottom: 1px solid #333;
-            margin-top: 60px;
-            margin-bottom: 5px;
-        }
-        .indent {
-            padding-left: 20px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 10pt; line-height: 1.4; color: #333; }
+
+        /* LETTERHEAD */
+        .letterhead { border-bottom: 3px solid #003399; padding-bottom: 12px; margin-bottom: 16px; }
+        .letterhead-inner { display: table; width: 100%; }
+        .letterhead-logo { display: table-cell; width: 80px; vertical-align: middle; }
+        .letterhead-logo img { width: 64px; height: auto; }
+        .letterhead-text { display: table-cell; vertical-align: middle; padding-left: 12px; }
+        .letterhead-text .org-name { font-size: 13pt; font-weight: bold; color: #003399; letter-spacing: 0.5px; }
+        .letterhead-text .org-unit { font-size: 10pt; font-weight: bold; color: #333; margin-top: 2px; }
+        .letterhead-text .org-address { font-size: 8pt; color: #555; margin-top: 3px; }
+        .letterhead-right { display: table-cell; vertical-align: middle; text-align: right; width: 140px; }
+        .letterhead-right .system-name { font-size: 9pt; color: #003399; font-weight: bold; }
+        .letterhead-right .system-sub { font-size: 8pt; color: #666; }
+
+        /* DOC TITLE */
+        .doc-title { text-align: center; margin-bottom: 14px; }
+        .doc-title h1 { font-size: 14pt; font-weight: bold; color: #003399; text-transform: uppercase; letter-spacing: 1px; }
+        .doc-title .doc-subtitle { font-size: 9pt; color: #555; margin-top: 4px; }
+        .doc-divider { border: none; border-top: 1px solid #ccc; margin: 8px 0 14px 0; }
+
+        /* META */
+        .meta { margin-bottom: 14px; font-size: 9pt; background-color: #f5f8ff; border: 1px solid #d0d8f0; padding: 8px 12px; }
+        .meta table { width: 100%; }
+        .meta td { padding: 2px 0; }
+        .meta .meta-label { font-weight: bold; width: 120px; color: #003399; }
+
+        /* DATA TABLE */
+        table.data { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 9pt; }
+        table.data th, table.data td { border: 1px solid #ccc; padding: 5px 7px; text-align: left; }
+        table.data th { background-color: #003399; color: #ffffff; font-weight: bold; font-size: 9pt; text-align: center; }
+        table.data tr.category-header td { background-color: #e8ecf8; font-weight: bold; color: #003399; padding: 7px 10px; }
+        table.data tr.subtotal-row th { background-color: #f5f8ff; color: #003399; font-size: 8.5pt; }
+
+        .text-right { text-align: right !important; }
+        .text-center { text-align: center !important; }
+
+        /* SUMMARY */
+        .summary { margin-top: 16px; padding: 10px 14px; background-color: #f5f8ff; border: 1px solid #d0d8f0; font-size: 9pt; }
+        .summary-title { font-weight: bold; color: #003399; margin-bottom: 6px; }
+        .summary table { width: 100%; }
+        .summary td { padding: 3px 0; border-bottom: 1px dotted #d0d8f0; }
+        .summary tr:last-child td { border-bottom: none; }
+
+        /* SIGNATURE */
+        .signature-area { margin-top: 40px; font-size: 9pt; page-break-inside: avoid; }
+        .signature-right { text-align: center; width: 240px; float: right; }
+        .signature-line { border-bottom: 1px solid #333; margin-top: 55px; margin-bottom: 5px; }
+
+        /* FOOTER */
+        .page-footer { margin-top: 30px; padding-top: 8px; border-top: 1px solid #ccc; font-size: 7.5pt; color: #888; }
+        .page-footer table { width: 100%; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>{{ config('app.name') }}</h1>
-        <h1>{{ $title }}</h1>
-        <p>Dicetak pada: {{ $date }}</p>
+
+    {{-- LETTERHEAD --}}
+    <div class="letterhead">
+        <div class="letterhead-inner">
+            <div class="letterhead-logo">
+                <img src="{{ public_path('images/logo-pln.png') }}" alt="Logo PLN">
+            </div>
+            <div class="letterhead-text">
+                <div class="org-name">PT PLN (PERSERO)</div>
+                <div class="org-unit">Unit Layanan Pelanggan Cilacap</div>
+                <div class="org-address">
+                    Jl. Brigjend. Katamso No.52, Sidanegara, Kec. Cilacap Tengah<br>
+                    Kabupaten Cilacap, Jawa Tengah 53223
+                </div>
+            </div>
+            <div class="letterhead-right">
+                <div class="system-name">{{ config('app.name') }}</div>
+                <div class="system-sub">Sistem Inventaris Barang</div>
+            </div>
+        </div>
     </div>
 
+    {{-- DOC TITLE --}}
+    <div class="doc-title">
+        <h1>{{ $title }}</h1>
+        <div class="doc-subtitle">Dicetak pada: {{ $date }}</div>
+    </div>
+    <hr class="doc-divider">
+
+    {{-- META --}}
     <div class="meta">
         <table>
             <tr>
-                <td width="100"><strong>Total Kategori</strong></td>
+                <td class="meta-label">Total Kategori</td>
                 <td>: {{ $categories->count() }} kategori</td>
-            </tr>
-            <tr>
-                <td><strong>Total Barang</strong></td>
+                <td width="30"></td>
+                <td class="meta-label" width="120">Total Barang</td>
                 <td>: {{ number_format($totalItems) }} item</td>
             </tr>
             <tr>
-                <td><strong>Total Nilai</strong></td>
-                <td>: Rp {{ number_format($totalValue, 0, ',', '.') }}</td>
+                <td class="meta-label">Total Nilai</td>
+                <td colspan="4">: Rp {{ number_format($totalValue, 0, ',', '.') }}</td>
             </tr>
         </table>
     </div>
 
+    {{-- DATA TABLE PER KATEGORI --}}
     @foreach($categories as $category)
     <table class="data">
         <thead>
             <tr class="category-header">
-                <th colspan="4">{{ $category->name }} ({{ $category->commodities_count }} item)</th>
+                <td colspan="4">{{ $category->name }} ({{ $category->commodities_count }} item)</td>
             </tr>
             <tr>
                 <th width="30" class="text-center">No</th>
-                <th width="80">Kode Barang</th>
+                <th width="100">Kode Barang</th>
                 <th>Nama Barang</th>
-                <th width="90" class="text-right">Nilai (Rp)</th>
+                <th width="100" class="text-right">Nilai (Rp)</th>
             </tr>
         </thead>
         <tbody>
             @forelse($category->commodities as $index => $commodity)
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
-                <td>{{ $commodity->item_code }}</td>
+                <td style="font-family: monospace; font-size: 8pt;">{{ $commodity->item_code }}</td>
                 <td>{{ $commodity->name }}</td>
                 <td class="text-right">{{ number_format($commodity->purchase_price, 0, ',', '.') }}</td>
             </tr>
             @empty
             <tr>
-                <td colspan="4" class="text-center" style="font-style: italic; color: #666;">Tidak ada barang</td>
+                <td colspan="4" class="text-center" style="color: #999; font-style: italic;">Belum ada barang dalam kategori ini</td>
             </tr>
             @endforelse
         </tbody>
         @if($category->commodities->count() > 0)
         <tfoot>
-            <tr>
+            <tr class="subtotal-row">
                 <th colspan="3" class="text-right">Subtotal {{ $category->name }}</th>
                 <th class="text-right">{{ number_format($category->commodities->sum('purchase_price'), 0, ',', '.') }}</th>
             </tr>
@@ -163,37 +145,41 @@
     </table>
     @endforeach
 
+    {{-- SUMMARY --}}
     <div class="summary">
-        <h3>Ringkasan per Kategori</h3>
+        <div class="summary-title">Ringkasan Per Kategori</div>
         <table>
             @foreach($categories as $category)
             <tr>
-                <td class="label" width="200">{{ $category->name }}</td>
-                <td width="80">: {{ $category->commodities_count }} item</td>
+                <td width="40%">{{ $category->name }}</td>
+                <td width="20%">: {{ $category->commodities_count }} item</td>
                 <td class="text-right">Rp {{ number_format($category->commodities->sum('purchase_price'), 0, ',', '.') }}</td>
             </tr>
             @endforeach
-            <tr style="border-top: 2px solid #333;">
-                <td class="label"><strong>TOTAL KESELURUHAN</strong></td>
-                <td><strong>: {{ number_format($totalItems) }} item</strong></td>
-                <td class="text-right"><strong>Rp {{ number_format($totalValue, 0, ',', '.') }}</strong></td>
+        </table>
+    </div>
+
+    {{-- SIGNATURE --}}
+    <div class="signature-area">
+        <div class="signature-right">
+            <p>Cilacap, {{ $date }}</p>
+            <p style="margin-top: 4px;"><strong>Penanggung Jawab</strong></p>
+            <div class="signature-line"></div>
+            <p>( _________________________ )</p>
+            <p style="margin-top: 3px;">NIP. _______________________</p>
+        </div>
+        <div style="clear: both;"></div>
+    </div>
+
+    {{-- FOOTER --}}
+    <div class="page-footer">
+        <table>
+            <tr>
+                <td>{{ config('app.name') }} &bull; PT PLN (Persero) ULP Cilacap</td>
+                <td class="text-right">Dokumen ini dicetak secara otomatis oleh sistem pada {{ $date }}</td>
             </tr>
         </table>
     </div>
 
-    <div class="signature-area">
-        <table width="100%">
-            <tr>
-                <td width="50%"></td>
-                <td width="50%" class="text-center">
-                    <p>{{ $date }}</p>
-                    <p><strong>Penanggung Jawab</strong></p>
-                    <div class="signature-line"></div>
-                    <p>(_______________________)</p>
-                    <p>NIP. ___________________</p>
-                </td>
-            </tr>
-        </table>
-    </div>
 </body>
 </html>
