@@ -47,7 +47,7 @@
         <div class="card-body">
             <form id="filterForm" action="{{ route('users.index') }}" method="GET" class="grid grid-cols-1 sm:grid-cols-4 gap-4" data-no-warn>
                 <div class="relative">
-                    <input type="text" name="search" id="searchInput" class="input w-full pl-10" placeholder="Cari nama/email/kode referral..." value="{{ request('search') }}" oninput="debounceSearch()">
+                    <input type="text" name="search" id="searchInput" class="input w-full pl-10" placeholder="Cari nama atau email..." value="{{ request('search') }}" oninput="debounceSearch()">
                     <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     <div id="searchSpinner" class="hidden absolute right-3 top-1/2 -translate-y-1/2">
                         <svg class="animate-spin h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
@@ -80,8 +80,6 @@
                     <tr>
                         <th class="w-12">No</th>
                         <th>Pengguna</th>
-                        <th>Kode Referral</th>
-                        <th>Direferensikan Oleh</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th class="text-right">Aksi</th>
@@ -99,21 +97,6 @@
                                     <p class="text-xs text-gray-600">{{ $user->email }}</p>
                                 </div>
                             </div>
-                        </td>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <code class="text-xs bg-gray-100 px-2 py-1 rounded">{{ $user->referral_code }}</code>
-                                <button type="button" 
-                                        onclick="copyToClipboard('{{ url('register?ref=' . $user->referral_code) }}')"
-                                        class="text-gray-600 hover:text-primary-600" title="Salin Link Referral">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </td>
-                        <td class="text-gray-600">
-                            {{ $user->referrer?->name ?? '-' }}
                         </td>
                         <td>
                             <span class="badge {{ $user->role === 'admin' ? 'badge-warning' : ($user->role === 'staff' ? 'badge-info' : 'badge-gray') }}">
@@ -151,7 +134,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7">
+                        <td colspan="5">
                             <x-empty-state 
                                 icon="users"
                                 title="Belum ada pengguna"
@@ -228,11 +211,7 @@
                         </button>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--text-primary);">Kode Referral <span class="text-xs" style="color: var(--text-secondary);">(opsional)</span></label>
-                    <input type="text" name="referral_code" id="createReferralCode" class="input w-full" placeholder="Masukkan kode referral">
-                </div>
-                <div class="flex items-center pt-6">
+                <div class="flex items-center pt-6 md:col-span-2">
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" id="createIsActive" value="1" class="sr-only peer" checked>
