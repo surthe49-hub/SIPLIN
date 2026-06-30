@@ -46,17 +46,19 @@ Route::middleware('guest')->group(function () {
     // NOTE: Password reset routes moved outside guest middleware (see below)
 });
 
-// Password Reset Routes (No Middleware - Works for both Guest & Auth)
-Route::middleware('throttle:5,1')->group(function () {
-    Route::post('reset-password/email', [PasswordResetController::class, 'store'])->name('password.email.auth');
-    Route::post('reset-password/security', [PasswordResetController::class, 'verifySecurityQuestions'])->name('password.verify.auth');
-    Route::post('reset-password/update', [PasswordResetController::class, 'reset'])->name('password.update.auth');
-});
-
+// Password Reset - DISABLED (self-service tidak tersedia, lihat catatan di README)
+// Halaman ini sekarang hanya menampilkan instruksi untuk hubungi admin.
+// Reset password aktual dilakukan admin melalui /admin/pengguna/{user}/reset-password
 Route::get('reset-password', [PasswordResetController::class, 'create'])->name('password.reset.auth');
-Route::get('reset-password/security', [PasswordResetController::class, 'showSecurityQuestions'])->name('password.security.auth');
-Route::get('reset-password/form/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset.form.auth');
-
+ 
+// Route lama di bawah ini SENGAJA tidak didaftarkan lagi:
+// - password.email.auth
+// - password.verify.auth
+// - password.update.auth
+// - password.security.auth
+// - password.reset.form.auth
+// Kalau ada link lama yang masih reference nama route ini, akan error
+// "Route not defined" - itu sengaja, supaya ketahuan saat testing.
 // Setup Security (WAJIB untuk semua user yang belum setup)
 Route::middleware('auth')->group(function () {
     Route::get('security/setup', [RegisterController::class, 'showSetupSecurity'])->name('security.setup');
@@ -233,6 +235,8 @@ Route::resource('users', UserController::class)->names([
     'update'  => 'users.update',
     'destroy' => 'users.destroy',
 ]);
+Route::post('pengguna/{user}/reset-password', [UserController::class, 'resetPassword'])
+             ->name('users.reset-password');
     });
 
     // About Page

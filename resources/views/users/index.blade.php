@@ -306,6 +306,24 @@
                 </button>
             </div>
         </form>
+
+        {{-- ============ RESET PASSWORD (terpisah dari form update biasa) ============ --}}
+        @if(auth()->user()->role === 'admin')
+        <div class="mt-4 pt-4 border-t" style="border-color: var(--border-color);">
+            <div class="flex items-center justify-between gap-3">
+                <div>
+                    <p class="text-sm font-medium" style="color: var(--text-primary);">Lupa Password?</p>
+                    <p class="text-xs" style="color: var(--text-secondary);">Buat password baru secara acak untuk pengguna ini.</p>
+                </div>
+                <button type="button" id="resetPasswordBtn" onclick="resetUserPassword()" class="btn btn-outline text-amber-700 border-amber-300 hover:bg-amber-50 flex-shrink-0">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Reset Password
+                </button>
+            </div>
+        </div>
+        @endif
     </x-modal>
 
     <!-- SweetAlert2 CDN - only for this page -->
@@ -336,7 +354,12 @@
             openModal('createModal');
         }
 
+        let currentEditUserId = null;
+        let currentEditUserName = null;
+
         function openEditModal(user) {
+            currentEditUserId = user.id;
+            currentEditUserName = user.name || '';
             document.getElementById('editForm').action = `/admin/pengguna/${user.id}`;
             document.getElementById('editName').value = user.name || '';
             document.getElementById('editEmail').value = user.email || '';
@@ -344,6 +367,111 @@
             document.getElementById('editRole').value = user.role || '';
             document.getElementById('editIsActive').checked = user.is_active;
             openModal('editModal');
+        }
+
+        async function resetUserPassword() {
+            if (!currentEditUserId) return;
+
+            // Generate password awal (10 karakter acak)
+            const generateRandomPassword = () => {
+                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+                let pwd = '';
+                for (let i = 0; i < 10; i++) {
+                    pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                return pwd;
+            };
+
+            const initialPassword = generateRandomPassword();
+
+            const { value: newPassword, isConfirmed } = await Swal.fire({
+                title: 'Reset Password',
+                html: `
+                    <div class="text-left">
+                        <p class="text-sm text-gray-600 mb-3">Password baru untuk <strong>${currentEditUserName}</strong>:</p>
+                        <div class="flex gap-2">
+                            <input id="swalPasswordInput" type="text" value="${initialPassword}"
+                                class="swal2-input flex-1 font-mono"
+                                style="margin: 0; font-size: 14px;"
+                                minlength="8" maxlength="50">
+                            <button type="button" id="swalRegenerateBtn"
+                                class="btn btn-outline text-sm flex-shrink-0"
+                                style="padding: 0 12px;">
+                                Acak Ulang
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2">Minimal 8 karakter. Kamu bisa edit atau klik "Acak Ulang".</p>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonColor: '#d97706',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Reset Sekarang',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                focusConfirm: false,
+                didOpen: () => {
+                    const input = document.getElementById('swalPasswordInput');
+                    const regenBtn = document.getElementById('swalRegenerateBtn');
+                    regenBtn.addEventListener('click', () => {
+                        input.value = generateRandomPassword();
+                        input.focus();
+                    });
+                },
+                preConfirm: () => {
+                    const value = document.getElementById('swalPasswordInput').value.trim();
+                    if (value.length < 8) {
+                        Swal.showValidationMessage('Password minimal 8 karakter');
+                        return false;
+                    }
+                    return value;
+                }
+            });
+
+            if (!isConfirmed || !newPassword) return;
+
+            try {
+                const response = await fetch(`/admin/pengguna/${currentEditUserId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ password: newPassword }),
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    closeModal('editModal');
+                    await Swal.fire({
+                        title: 'Password Berhasil Direset',
+                        html: `
+                            <div class="text-left bg-amber-50 border border-amber-300 rounded-lg p-4 mt-3">
+                                <p class="text-sm text-amber-800 mb-3">Catat sekarang — password ini tidak akan ditampilkan lagi. Sampaikan ke pengguna secara langsung (chat, telepon, tatap muka).</p>
+                                <div class="bg-white border border-amber-300 rounded p-3 space-y-1">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Email</span>
+                                        <code>${data.email}</code>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-500">Password Baru</span>
+                                        <code class="font-bold text-amber-900">${data.new_password}</code>
+                                    </div>
+                                </div>
+                            </div>
+                        `,
+                        icon: 'success',
+                        confirmButtonText: 'Sudah Dicatat',
+                        confirmButtonColor: '#003399',
+                    });
+                } else {
+                    Toast.fire({ icon: 'error', title: data.message || 'Gagal reset password.' });
+                }
+            } catch (error) {
+                Toast.fire({ icon: 'error', title: 'Terjadi kesalahan. Silakan coba lagi.' });
+            }
         }
 
         async function deleteUser(id, name) {
