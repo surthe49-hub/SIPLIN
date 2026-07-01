@@ -139,8 +139,6 @@
                                 icon="users"
                                 title="Belum ada pengguna"
                                 description="Tambah pengguna baru untuk mulai mengelola tim Anda"
-                                action="{{ route('users.create') }}"
-                                actionText="Tambah Pengguna"
                             />
                         </td>
                     </tr>

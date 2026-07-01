@@ -22,7 +22,7 @@
                 @elseif($user->role === 'staff')
                     Staff
                 @else
-                    Staff
+                    User
                 @endif
             </span>
             @if($user->is_active)
@@ -33,50 +33,21 @@
         </div>
     </div>
 
-    <!-- Grid Layout - Wide -->
+    <!-- Grid Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
         <!-- Left Column -->
         <div class="lg:col-span-3 space-y-4">
-            <!-- Info Cards Row -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Referral Code -->
-                <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
-                    <p class="text-xs mb-1" style="color: var(--text-secondary);">Kode Referral</p>
-                    <div class="flex items-center gap-2">
-                        <code class="text-sm font-mono px-2 py-1 rounded" style="background-color: var(--bg-input); color: var(--text-primary);">{{ $user->referral_code }}</code>
-                        <button type="button" onclick="copyToClipboard('{{ url('register?ref=' . $user->referral_code) }}')" class="p-1 rounded hover:bg-gray-100" title="Salin Link">
-                            <svg class="w-4 h-4" style="color: var(--accent-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Referred By -->
-                <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
-                    <p class="text-xs mb-1" style="color: var(--text-secondary);">Direferensikan Oleh</p>
-                    <p class="text-sm font-medium" style="color: var(--text-primary);">{{ $user->referrer?->name ?? 'Admin Pertama' }}</p>
-                </div>
-
-                <!-- Contact -->
+            <!-- Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
                     <p class="text-xs mb-1" style="color: var(--text-secondary);">No. Telepon</p>
                     <p class="text-sm font-medium" style="color: var(--text-primary);">{{ $user->phone ?? '-' }}</p>
                 </div>
-            </div>
-
-            <!-- Referrals -->
-            @if($user->referrals->count() > 0)
-            <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
-                <h3 class="text-sm font-semibold mb-3" style="color: var(--text-primary);">Staff yang Direferensikan ({{ $user->referrals->count() }})</h3>
-                <div class="flex flex-wrap gap-2">
-                    @foreach($user->referrals as $referral)
-                    <a href="{{ route('users.show', $referral) }}" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm hover:opacity-80" style="background-color: var(--bg-input); color: var(--text-primary);">
-                        <img src="{{ $referral->avatar_url }}" class="w-5 h-5 rounded-full" alt="">
-                        {{ $referral->name }}
-                    </a>
-                    @endforeach
+                <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
+                    <p class="text-xs mb-1" style="color: var(--text-secondary);">Email</p>
+                    <p class="text-sm font-medium" style="color: var(--text-primary);">{{ $user->email }}</p>
                 </div>
             </div>
-            @endif
 
             <!-- Recent Activity -->
             <div class="rounded-lg border overflow-hidden" style="background-color: var(--bg-card); border-color: var(--border-color);">
@@ -103,12 +74,8 @@
                                 <td class="px-4 py-3">
                                     <span class="badge {{ $activity->action_badge_class }}">{{ $activity->action_label }}</span>
                                 </td>
-                                <td class="px-4 py-3" style="color: var(--text-primary);">
-                                    {{ $activity->description }}
-                                </td>
-                                <td class="px-4 py-3 text-xs font-mono" style="color: var(--text-secondary);">
-                                    {{ $activity->ip_address ?? '-' }}
-                                </td>
+                                <td class="px-4 py-3" style="color: var(--text-primary);">{{ $activity->description }}</td>
+                                <td class="px-4 py-3 text-xs font-mono" style="color: var(--text-secondary);">{{ $activity->ip_address ?? '-' }}</td>
                                 <td class="px-4 py-3 text-xs" style="color: var(--text-secondary);">
                                     <div class="flex flex-col">
                                         <span>{{ $activity->created_at->format('d M Y, H:i') }}</span>
@@ -145,40 +112,16 @@
             </div>
 
             <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
-                <p class="text-xs mb-1" style="color: var(--text-secondary);">Total Referral</p>
-                <p class="text-2xl font-bold" style="color: var(--accent-color);">{{ $user->referrals->count() }}</p>
-            </div>
-
-            <div class="rounded-lg border p-4" style="background-color: var(--bg-card); border-color: var(--border-color);">
                 <p class="text-xs mb-1" style="color: var(--text-secondary);">Total Aktivitas</p>
                 <p class="text-2xl font-bold" style="color: var(--text-primary);">{{ $activities->count() }}</p>
             </div>
 
-            @can('users.edit')
-            <a href="{{ route('users.edit', $user) }}" class="btn btn-outline w-full">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                Edit Pengguna
+            <a href="{{ route('users.index') }}" class="btn btn-outline w-full">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Kembali ke Daftar & Edit
             </a>
-            @endcan
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        const Toast = Swal.mixin({ toast: true, position: 'bottom-end', showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                Toast.fire({
-                    icon: 'success',
-                    title: 'Link referral berhasil disalin!'
-                });
-            }).catch(() => {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'Gagal menyalin link'
-                });
-            });
-        }
-    </script>
 </x-app-layout>

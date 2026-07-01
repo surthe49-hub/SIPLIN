@@ -904,7 +904,18 @@
         }
         
         function showValidationError(message) {
-            alert('Error: ' + message);
+            // Pakai SweetAlert kalau tersedia (lebih rapi), fallback ke native alert
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Terjadi Kesalahan',
+                    text: message,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#003399',
+                });
+            } else {
+                alert('Error: ' + message);
+            }
         }
 
         // Auto-show validation errors dari session
@@ -1068,6 +1079,9 @@
             }
         }
     </script>
+
+    {{-- SweetAlert2: dipakai untuk showValidationError() dan toast notifications --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @stack('scripts')
 </body>

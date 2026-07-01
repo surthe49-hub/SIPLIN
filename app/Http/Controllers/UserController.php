@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
@@ -22,8 +23,8 @@ class UserController extends Controller implements HasMiddleware
     {
         return [
             new Middleware('permission:users.manage', only: ['index', 'show']),
-            new Middleware('permission:users.create', only: ['create', 'store']),
-            new Middleware('permission:users.edit', only: ['edit', 'update', 'resetPassword']),
+            new Middleware('permission:users.create', only: ['store']),
+            new Middleware('permission:users.edit', only: ['update', 'resetPassword']),
             new Middleware('permission:users.delete', only: ['destroy']),
         ];
     }
@@ -88,38 +89,25 @@ class UserController extends Controller implements HasMiddleware
     }
 
     /**
-     * Tampilkan form tambah pengguna.
-     */
-    public function create(): View
-    {
-        if (auth()->user()->role === 'admin') {
-            $roles = [
-                'admin' => 'Administrator',
-                'staff' => 'Staff',
-                'user' => 'User'
-            ];
-        } elseif (auth()->user()->role === 'staff') {
-            $roles = [
-                'user' => 'User'
-            ];
-        } else {
-            $roles = [];
-        }
-
-        return view('users.create', compact('roles'));
-    }
-
-    /**
      * Simpan pengguna baru.
-     * NOTE: referral_code dan security_question sudah dihapus dari validasi
-     * karena fitur tersebut sudah tidak digunakan di SIPLIN.
+     *
+     * Handle 3 scenario:
+     * 1. Email belum pernah dipakai → CREATE user baru
+     * 2. Email dipakai user AKTIF → validation error (email sudah terdaftar)
+     * 3. Email dipakai user SOFT-DELETED → RESTORE + update datanya
+     *    (biar admin tidak bingung kenapa email "sudah terdaftar" padahal
+     *    tidak muncul di list)
      */
     public function store(Request $request)
     {
+        // Validation: unique hanya cek user AKTIF (WHERE deleted_at IS NULL)
+        // User soft-deleted tidak trigger conflict — akan di-handle di logic bawah
+        $emailUniqueRule = Rule::unique('users', 'email')->whereNull('deleted_at');
+
         if (auth()->user()->role === 'staff') {
             $validated = $request->validate([
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255', 'unique:users'],
+                'email' => ['required', 'email', 'max:255', $emailUniqueRule],
                 'password' => ['required', 'confirmed', Password::defaults()],
                 'phone' => ['nullable', 'string', 'regex:/^(\+62|0)[0-9]{9,12}$/', 'max:20'],
                 'role' => ['required', 'in:user'],
@@ -128,7 +116,7 @@ class UserController extends Controller implements HasMiddleware
         } elseif (auth()->user()->role === 'admin') {
             $validated = $request->validate([
                 'name' => ['required', 'string', 'max:255'],
-                'email' => ['required', 'email', 'max:255', 'unique:users'],
+                'email' => ['required', 'email', 'max:255', $emailUniqueRule],
                 'password' => ['required', 'confirmed', Password::defaults()],
                 'phone' => ['nullable', 'string', 'regex:/^(\+62|0)[0-9]{9,12}$/', 'max:20'],
                 'role' => ['required', 'in:admin,staff,user'],
@@ -149,28 +137,55 @@ class UserController extends Controller implements HasMiddleware
             }
         }
 
+        $email = strtolower(trim($validated['email']));
+
         $userData = [
             'name' => trim($validated['name']),
-            'email' => strtolower(trim($validated['email'])),
+            'email' => $email,
             'password' => Hash::make($validated['password']),
             'phone' => $validated['phone'] ?? null,
-            'role' => $validated['role'],
             'is_active' => $request->boolean('is_active', true),
-            'security_setup_completed' => true,
         ];
 
         try {
-            $user = User::create($userData);
+            // Cek dulu apakah ada user soft-deleted dengan email ini
+            $existingTrashed = User::onlyTrashed()->where('email', $email)->first();
+
+            if ($existingTrashed) {
+                // Restore + update datanya
+                $existingTrashed->restore();
+                $existingTrashed->fill($userData);
+                $existingTrashed->role = $validated['role']; // role di luar fillable (defense-in-depth)
+                $existingTrashed->save();
+
+                $successMsg = "Pengguna berhasil dipulihkan dari data terhapus dan diperbarui.";
+
+                ActivityLog::create([
+                    'user_id' => auth()->id(),
+                    'action' => 'restore_user',
+                    'description' => "Admin memulihkan user soft-deleted: {$email}",
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+
+                $user = $existingTrashed;
+            } else {
+                // Create user baru
+                $user = new User($userData);
+                $user->role = $validated['role']; // role di luar fillable (defense-in-depth)
+                $user->save();
+
+                $successMsg = "Pengguna berhasil ditambahkan.";
+            }
 
             if ($request->expectsJson()) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Pengguna berhasil ditambahkan.'
+                    'message' => $successMsg,
                 ]);
             }
 
-            return redirect()->route('users.index')
-                ->with('success', 'Pengguna berhasil ditambahkan.');
+            return redirect()->route('users.index')->with('success', $successMsg);
         } catch (\Exception $e) {
             Log::error('User creation failed', [
                 'error' => $e->getMessage(),
@@ -201,27 +216,18 @@ class UserController extends Controller implements HasMiddleware
     }
 
     /**
-     * Tampilkan form edit pengguna.
-     */
-    public function edit(User $user): View
-    {
-        $roles = [
-            'admin' => 'Administrator',
-            'staff' => 'Staff',
-            'user' => 'User'
-        ];
-
-        return view('users.edit', compact('user', 'roles'));
-    }
-
-    /**
      * Update pengguna.
      */
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->whereNull('deleted_at')->ignore($user->id),
+            ],
             'password' => ['nullable', 'confirmed', Password::defaults()],
             'phone' => ['nullable', 'string', 'regex:/^(\+62|0)[0-9]{9,12}$/', 'max:20'],
             'role' => ['required', 'in:admin,staff,user'],
@@ -248,7 +254,6 @@ class UserController extends Controller implements HasMiddleware
             'name' => trim($validated['name']),
             'email' => strtolower(trim($validated['email'])),
             'phone' => $validated['phone'] ? trim($validated['phone']) : null,
-            'role' => $validated['role'],
             'is_active' => $request->boolean('is_active', true),
         ];
 
@@ -264,7 +269,9 @@ class UserController extends Controller implements HasMiddleware
                 $userData['avatar'] = $request->file('avatar')->store('avatars', 'public');
             }
 
-            $user->update($userData);
+            $user->fill($userData);
+            $user->role = $validated['role']; // role di luar fillable (defense-in-depth)
+            $user->save();
 
             if ($request->expectsJson()) {
                 return response()->json(['success' => true, 'message' => 'Pengguna berhasil diperbarui.']);
@@ -298,7 +305,6 @@ class UserController extends Controller implements HasMiddleware
             abort(403, 'Hanya admin yang dapat mereset password pengguna.');
         }
 
-        // Validasi password kalau admin kirim, generate kalau tidak
         $newPassword = $request->input('password');
 
         if ($newPassword) {
@@ -309,7 +315,6 @@ class UserController extends Controller implements HasMiddleware
                 'password.max' => 'Password maksimal 50 karakter.',
             ]);
         } else {
-            // Fallback: generate kalau request tidak menyertakan password
             $newPassword = Str::random(10);
         }
 

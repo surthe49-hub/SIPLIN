@@ -14,16 +14,14 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ReferralCodeController;
 use App\Http\Controllers\ReportVerificationController;
 use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes (Bisa Diakses Semua Orang)
+| Public Routes
 |--------------------------------------------------------------------------
 */
-// PERUBAHAN #1: Mengeluarkan route '/' dari middleware guest agar menjadi public route
 Route::get('/', fn() => view('home'))->name('home');
 
 /*
@@ -32,38 +30,19 @@ Route::get('/', fn() => view('home'))->name('home');
 |--------------------------------------------------------------------------
 */
 Route::middleware('guest')->group(function () {
-    // Auth Page (Login & Register)
     Route::get('auth', [AuthenticatedSessionController::class, 'index'])->name('auth');
     Route::get('login', fn() => redirect()->route('auth'))->name('login');
-    
+
     // Rate Limited Auth Actions (5 attempts per minute)
     Route::middleware('throttle:5,1')->group(function () {
         Route::post('login', [AuthenticatedSessionController::class, 'store']);
         Route::post('register', [RegisterController::class, 'store'])->name('register');
     });
-
-    // NOTE: Referral validation moved to /api/validate-referral (routes/api.php)
-    // NOTE: Password reset routes moved outside guest middleware (see below)
 });
 
-// Password Reset - DISABLED (self-service tidak tersedia, lihat catatan di README)
-// Halaman ini sekarang hanya menampilkan instruksi untuk hubungi admin.
-// Reset password aktual dilakukan admin melalui /admin/pengguna/{user}/reset-password
+// Lupa Password - hanya menampilkan instruksi hubungi admin (self-service disabled)
+// Reset password aktual dilakukan admin via /admin/pengguna/{user}/reset-password
 Route::get('reset-password', [PasswordResetController::class, 'create'])->name('password.reset.auth');
- 
-// Route lama di bawah ini SENGAJA tidak didaftarkan lagi:
-// - password.email.auth
-// - password.verify.auth
-// - password.update.auth
-// - password.security.auth
-// - password.reset.form.auth
-// Kalau ada link lama yang masih reference nama route ini, akan error
-// "Route not defined" - itu sengaja, supaya ketahuan saat testing.
-// Setup Security (WAJIB untuk semua user yang belum setup)
-Route::middleware('auth')->group(function () {
-    Route::get('security/setup', [RegisterController::class, 'showSetupSecurity'])->name('security.setup');
-    Route::post('security/setup', [RegisterController::class, 'storeSetupSecurity'])->name('security.store');
-});
 
 /*
 |--------------------------------------------------------------------------
@@ -71,7 +50,7 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    // PERUBAHAN #2: Menyediakan method POST dan GET untuk Logout agar mencegah error 419/kemudahan URL
+    // Logout (POST utama, GET fallback untuk mencegah 419)
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
     Route::get('logout', [AuthenticatedSessionController::class, 'destroy']);
 
@@ -82,7 +61,6 @@ Route::middleware('auth')->group(function () {
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
-    Route::put('profile/security', [ProfileController::class, 'updateSecurity'])->name('profile.security');
 
     // Notifications
     Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
@@ -90,18 +68,13 @@ Route::middleware('auth')->group(function () {
     Route::post('notifications/{notification}/read', [NotificationController::class, 'markRead'])->name('notifications.read');
 
     // ========================================
-    // MASTER DATA (Barang, Kategori, Lokasi)
+    // MASTER DATA
     // ========================================
     Route::prefix('master')->group(function () {
-        // Barang (Commodities)
         Route::prefix('barang')->group(function () {
-            // Preview Item Code (API) - MUST be before resource routes
             Route::get('preview-code', [CommodityController::class, 'previewCode'])->name('commodities.preview-code');
-            
-            // Export (MUST be before resource routes to avoid conflict)
             Route::get('ekspor', [CommodityController::class, 'export'])->name('commodities.export');
-            
-            // Debug PDF test (only in local environment)
+
             if (app()->environment('local')) {
                 Route::get('test-pdf', function() {
                     $commodities = \App\Models\Commodity::with(['category', 'location'])->limit(5)->get();
@@ -114,7 +87,7 @@ Route::middleware('auth')->group(function () {
                     return $pdf->download('test-export.pdf');
                 });
             }
-            
+
             Route::resource('/', CommodityController::class)->parameters(['' => 'commodity'])->names([
                 'index' => 'commodities.index',
                 'create' => 'commodities.create',
@@ -126,7 +99,6 @@ Route::middleware('auth')->group(function () {
             ]);
         });
 
-        // Kategori (Categories)
         Route::resource('kategori', CategoryController::class)->names([
             'index' => 'categories.index',
             'create' => 'categories.create',
@@ -137,7 +109,6 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'categories.destroy',
         ])->parameters(['kategori' => 'category']);
 
-        // Lokasi (Locations)
         Route::resource('lokasi', LocationController::class)->names([
             'index' => 'locations.index',
             'create' => 'locations.create',
@@ -150,10 +121,9 @@ Route::middleware('auth')->group(function () {
     });
 
     // ========================================
-    // TRANSAKSI (Transfer, Maintenance, Penghapusan)
+    // TRANSAKSI
     // ========================================
     Route::prefix('transaksi')->group(function () {
-        // Transfer (Mutasi)
         Route::prefix('transfer')->group(function () {
             Route::post('{transfer}/setujui', [TransferController::class, 'approve'])->name('transfers.approve');
             Route::post('{transfer}/tolak', [TransferController::class, 'reject'])->name('transfers.reject');
@@ -167,7 +137,6 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'transfers.destroy',
         ]);
 
-        // Maintenance (Pemeliharaan)
         Route::resource('maintenance', MaintenanceController::class)->names([
             'index' => 'maintenance.index',
             'create' => 'maintenance.create',
@@ -178,7 +147,6 @@ Route::middleware('auth')->group(function () {
             'destroy' => 'maintenance.destroy',
         ]);
 
-        // Penghapusan (Disposals)
         Route::prefix('penghapusan')->group(function () {
             Route::post('{disposal}/setujui', [DisposalController::class, 'approve'])->name('disposals.approve');
             Route::post('{disposal}/tolak', [DisposalController::class, 'reject'])->name('disposals.reject');
@@ -193,7 +161,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // ========================================
-    // LAPORAN (Reports)
+    // LAPORAN
     // ========================================
     Route::prefix('laporan')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('reports.index');
@@ -208,73 +176,58 @@ Route::middleware('auth')->group(function () {
     });
 
     // ========================================
-    // ADMIN (Pengguna, Kode Referral)
+    // ADMIN
     // ========================================
     Route::prefix('admin')->group(function () {
-        // Pengguna (Users)
-        Route::resource('pengguna', UserController::class)->names([
+        // Pengguna (Users) - hanya resource, create/edit via modal di index (bukan halaman standalone)
+        Route::resource('pengguna', UserController::class)->except(['create', 'edit'])->names([
             'index' => 'users.index',
-            'create' => 'users.create',
             'store' => 'users.store',
             'show' => 'users.show',
-            'edit' => 'users.edit',
             'update' => 'users.update',
             'destroy' => 'users.destroy',
         ])->parameters(['pengguna' => 'user']);
 
-      // ========================================
-// USER MANAGEMENT
-// ========================================
-
-Route::resource('users', UserController::class)->names([
-    'index'   => 'users.index',
-    'create'  => 'users.create',
-    'store'   => 'users.store',
-    'show'    => 'users.show',
-    'edit'    => 'users.edit',
-    'update'  => 'users.update',
-    'destroy' => 'users.destroy',
-]);
-Route::post('pengguna/{user}/reset-password', [UserController::class, 'resetPassword'])
+        // Reset password by admin
+        Route::post('pengguna/{user}/reset-password', [UserController::class, 'resetPassword'])
              ->name('users.reset-password');
     });
 
     // About Page
     Route::get('about', fn() => view('about'))->name('about');
-    
-    // Session Status API (read-only check)
+
+    // Session Status API
     Route::get('/api/session/status', function (Illuminate\Http\Request $request) {
         if (!auth()->check()) {
             $hasSessionCookie = $request->hasCookie(config('session.cookie'));
             $lastActivity = $request->session()->get('last_activity');
-            
+
             if ($hasSessionCookie && $lastActivity) {
                 return response()->json(['status' => 'expired'], 401);
             } else {
                 return response()->json(['status' => 'unauthenticated'], 401);
             }
         }
-        
+
         $session = $request->session();
         $lastActivity = $session->get('last_activity', time());
         $lifetime = config('session.lifetime') * 60;
         $remaining = $lifetime - (time() - $lastActivity);
-        
+
         return response()->json([
             'status' => 'active',
             'remaining' => $remaining,
             'expires_at' => $lastActivity + $lifetime
         ]);
     })->middleware('auth');
-    
-    // Session Extension API (explicitly extend session)
+
     Route::post('/api/session/extend', function (Illuminate\Http\Request $request) {
         if (!auth()->check()) {
             return response()->json(['status' => 'expired'], 401);
         }
-        
+
         $request->session()->put('last_activity', time());
-        
+
         return response()->json([
             'status' => 'extended',
             'remaining' => config('session.lifetime') * 60,

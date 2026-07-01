@@ -3,13 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, SoftDeletes;
@@ -17,68 +15,22 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
+     * SECURITY NOTE:
+     * - `role` is DELIBERATELY NOT in fillable to prevent privilege escalation
+     *   via mass assignment. Set explicitly: $user->role = $validated['role'];
+     * - `email_verified_at` is set via Laravel's email verification, not user input
+     * - `is_active` is safe to fill because activation status is not privilege-sensitive
+     *
      * @var list<string>
      */
     protected $fillable = [
         'name',
         'email',
-        'email_verified_at',
         'password',
         'phone',
         'avatar',
-        'birth_date',
-        'father_name',
         'is_active',
-        'role',
-        'referral_code',
-        'referred_by',
-        'security_question', // E-Surat-Perkim style field
-        'security_answer', // E-Surat-Perkim style field
-        'security_question_1',
-        'security_answer_1',
-        'security_question_2',
-        'security_answer_2',
-        'custom_security_question',
-        'custom_security_question_2',
-        'custom_security_answer',
-        'security_setup_completed',
     ];
-
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'birth_date' => 'date',
-        'is_active' => 'boolean',
-        'security_setup_completed' => 'boolean',
-        'password' => 'hashed',
-    ];
-
-    /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Auto-generate referral code
-        static::creating(function ($model) {
-            if (empty($model->referral_code)) {
-                $model->referral_code = self::generateReferralCode();
-            }
-        });
-    }
-
-    /**
-     * Generate unique referral code.
-     * Format: INV-XXXXXX-XXXXXX (20 chars)
-     */
-    public static function generateReferralCode(): string
-    {
-        do {
-            $code = 'INV-' . strtoupper(Str::random(6)) . '-' . strtoupper(Str::random(6));
-        } while (self::where('referral_code', $code)->exists());
-
-        return $code;
-    }
 
     /**
      * The attributes that should be hidden for serialization.
@@ -88,7 +40,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
-        'security_answer_1',
     ];
 
     /**
@@ -105,57 +56,9 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Cek apakah user sudah setup security question.
-     */
-    public function hasSecurityQuestion(): bool
-    {
-        // More robust checking - handle different data types
-        $hasCompleted = (bool) $this->security_setup_completed;
-        $hasQuestion = !is_null($this->security_question_1) && $this->security_question_1 !== '';
-        $hasAnswer = !is_null($this->security_answer_1) && $this->security_answer_1 !== '';
-        
-        return $hasCompleted && $hasQuestion && $hasAnswer;
-    }
-
-    /**
-     * Cek apakah user sudah setup security untuk forgot-password (E-Surat-Perkim style).
-     * Required: birth date + security question 1 + answer 1.
-     */
-    public function hasSecurityQuestions(): bool
-    {
-        $hasCompleted = (bool) $this->security_setup_completed;
-        $hasBirthDate = !is_null($this->birth_date) && $this->birth_date !== '';
-        $hasQuestion1 = !is_null($this->security_question_1) && $this->security_question_1 !== '';
-        $hasAnswer1 = !is_null($this->security_answer_1) && $this->security_answer_1 !== '';
-        
-        
-        // Forgot password butuh: birth date + security question 1 + answer 1 (E-Surat-Perkim style)
-        return $hasCompleted && $hasBirthDate && $hasQuestion1 && $hasAnswer1;
-    }
-
-    /**
-     * Verify security answer (case-insensitive).
-     */
-    public function verifySecurityAnswer(string $answer): bool
-    {
-        return \Illuminate\Support\Facades\Hash::check(
-            strtolower(trim($answer)),
-            $this->security_answer_1
-        );
-    }
-
-    /**
-     * Get pertanyaan keamanan text.
-     */
-    public function getSecurityQuestionTextAttribute(): ?string
-    {
-        if ($this->security_question_1 === 0) {
-            return $this->custom_security_question;
-        }
-        $questions = config('security_questions.questions');
-        return $questions[$this->security_question_1] ?? null;
-    }
+    // ====================================================================
+    // RELATIONS
+    // ====================================================================
 
     /**
      * Commodities yang dibuat oleh user ini.
@@ -189,21 +92,9 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
-    /**
-     * User yang mereferensikan.
-     */
-    public function referrer(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'referred_by');
-    }
-
-    /**
-     * Users yang direferensikan oleh user ini.
-     */
-    public function referrals(): HasMany
-    {
-        return $this->hasMany(User::class, 'referred_by');
-    }
+    // ====================================================================
+    // SCOPES
+    // ====================================================================
 
     /**
      * Scope untuk user aktif.
@@ -213,17 +104,12 @@ class User extends Authenticatable
         return $query->where('is_active', true);
     }
 
-    /**
-     * Check if user can add admins.
-     */
-    public function canAddAdmin(): bool
-    {
-        // Only super admin (or first user) can add admins
-        return $this->id === 1;
-    }
+    // ====================================================================
+    // ROLE HELPERS
+    // ====================================================================
 
     /**
-     * Check if user is admin.
+     * Check apakah user adalah admin.
      */
     public function isAdmin(): bool
     {
@@ -231,7 +117,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is staff.
+     * Check apakah user adalah staff.
      */
     public function isStaff(): bool
     {
@@ -239,7 +125,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user is regular user.
+     * Check apakah user adalah user biasa.
      */
     public function isUser(): bool
     {
@@ -247,16 +133,20 @@ class User extends Authenticatable
     }
 
     /**
-     * Get user's referral codes usage.
+     * Check apakah user bisa menambah admin lain.
+     * Hanya admin yang bisa promote user lain menjadi admin.
      */
-    public function usedReferralCodes(): BelongsToMany
+    public function canAddAdmin(): bool
     {
-        return $this->belongsToMany(\App\Models\ReferralCode::class, 'referral_code_usage')
-            ->withPivot('used_at');
+        return $this->isAdmin();
     }
 
+    // ====================================================================
+    // ACCESSORS
+    // ====================================================================
+
     /**
-     * Get avatar URL atau default.
+     * Get avatar URL atau default UI Avatars.
      */
     public function getAvatarUrlAttribute(): string
     {

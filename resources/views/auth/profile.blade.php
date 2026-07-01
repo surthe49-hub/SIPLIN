@@ -74,7 +74,6 @@
                             <x-form.input label="Nama Lengkap" name="name" :value="$user->name" required disabled id="input-name" />
                             <x-form.input label="Email" name="email" type="email" :value="$user->email" required disabled id="input-email" />
                             <x-form.input label="No. Telepon" name="phone" :value="$user->phone" placeholder="08xxxxxxxxxx" disabled id="input-phone" />
-                            <x-form.input label="Tanggal Lahir" name="birth_date" type="date" :value="$user->birth_date?->format('Y-m-d')" disabled id="input-birth_date" />
                         </div>
                         <div id="profileFormButtons" class="hidden flex gap-2">
                             <button type="submit" class="btn btn-primary">
@@ -112,47 +111,6 @@
                             Ubah Password
                         </button>
                     </form>
-                </div>
-
-                <!-- Security Section -->
-                <div id="security" class="rounded-xl border p-6" style="background-color: var(--bg-card); border-color: var(--border-color);">
-                    <h3 class="text-lg font-semibold mb-4 flex items-center gap-2" style="color: var(--text-primary);">
-                        <svg class="w-5 h-5" style="color: var(--accent-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                        Keamanan Akun
-                    </h3>
-                    <p class="text-sm mb-4" style="color: var(--text-secondary);">Pertanyaan keamanan digunakan untuk verifikasi saat reset password</p>
-                    
-                    <!-- Status Pertanyaan Keamanan -->
-                    <div class="p-4 rounded-lg mb-4" style="background-color: var(--bg-input);">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-medium" style="color: var(--text-primary);">
-                                    @if($user->security_question_1 !== null)
-                                        <span class="inline-flex items-center gap-1 text-green-600">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                            Pertanyaan keamanan sudah diatur
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1 text-amber-600">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                                            Pertanyaan keamanan belum diatur
-                                        </span>
-                                    @endif
-                                </p>
-                                @if(!$user->birth_date)
-                                    <p class="text-xs mt-1 text-red-600">⚠️ Isi tanggal lahir di bagian profil terlebih dahulu</p>
-                                @else
-                                    <p class="text-xs mt-1" style="color: var(--text-secondary);">Verifikasi tanggal lahir untuk mengubah pertanyaan keamanan</p>
-                                @endif
-                            </div>
-                            <button type="button" onclick="openVerifyBirthModal()" 
-                                    class="btn {{ $user->birth_date ? 'btn-primary' : 'btn-secondary cursor-not-allowed opacity-50' }} text-sm"
-                                    {{ !$user->birth_date ? 'disabled' : '' }}>
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                                Ubah
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -213,66 +171,6 @@
         </div>
     </div>
 
-    <!-- Verify Birth Date Modal -->
-    <x-modal name="verifyBirthModal" title="Verifikasi Identitas" maxWidth="sm">
-        <div class="text-center mb-4">
-            <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center" style="background-color: var(--bg-input);">
-                <svg class="w-8 h-8" style="color: var(--accent-color);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                </svg>
-            </div>
-            <p class="text-sm" style="color: var(--text-secondary);">Masukkan tanggal lahir Anda untuk melanjutkan</p>
-        </div>
-        <div class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Tanggal Lahir</label>
-                <input type="date" id="verify-birth-date" class="input w-full" required>
-            </div>
-            <p id="verify-error" class="text-sm text-red-500 hidden">Tanggal lahir tidak sesuai</p>
-        </div>
-        <div class="flex gap-2 mt-6">
-            <button type="button" onclick="closeModal('verifyBirthModal')" class="btn btn-outline flex-1">Batal</button>
-            <button type="button" onclick="verifyBirthDate()" class="btn btn-primary flex-1">Verifikasi</button>
-        </div>
-    </x-modal>
-
-    <!-- Security Questions Modal -->
-    <x-modal name="securityModal" title="Ubah Pertanyaan Keamanan" maxWidth="lg">
-        <form id="securityForm" action="{{ route('profile.security') }}" method="POST">
-            @csrf @method('PUT')
-            <div class="space-y-4">
-                <!-- Pertanyaan Template -->
-                <div>
-                    <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Pertanyaan Keamanan</label>
-                    <select name="security_question_1" id="securityQuestion" class="input w-full" onchange="toggleCustomQuestion()">
-                        <option value="">Pilih pertanyaan...</option>
-                        @foreach($securityQuestions ?? [] as $key => $question)
-                        <option value="{{ $key }}" {{ $user->security_question_1 == $key ? 'selected' : '' }}>{{ $question }}</option>
-                        @endforeach
-                        <option value="0" {{ $user->security_question_1 === '0' || $user->security_question_1 === 0 ? 'selected' : '' }}>Tulis pertanyaan sendiri...</option>
-                    </select>
-                </div>
-                
-                <!-- Custom Question Input -->
-                <div id="customQuestionWrapper" class="{{ ($user->security_question_1 === 0 || $user->security_question_1 === '0') ? '' : 'hidden' }}">
-                    <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Pertanyaan Custom</label>
-                    <input type="text" name="custom_security_question" id="customQuestion" value="{{ $user->custom_security_question ?? '' }}" placeholder="Tulis pertanyaan Anda sendiri..." class="input w-full">
-                </div>
-                
-                <!-- Jawaban -->
-                <div>
-                    <label class="block text-sm font-medium mb-1" style="color: var(--text-primary);">Jawaban Keamanan <span class="text-red-500">*</span></label>
-                    <input type="text" name="security_answer_1" placeholder="Masukkan jawaban..." class="input w-full" required>
-                    <p class="text-xs mt-1" style="color: var(--text-secondary);">Jawaban bersifat case-insensitive</p>
-                </div>
-            </div>
-            <div class="flex gap-2 mt-6">
-                <button type="button" onclick="closeModal('securityModal')" class="btn btn-outline flex-1">Batal</button>
-                <button type="submit" class="btn btn-primary flex-1">Simpan</button>
-            </div>
-        </form>
-    </x-modal>
-
 @push('scripts')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
@@ -285,14 +183,13 @@ if (!window.profileScriptLoaded) {
     // Global variables
     window.cropper = null;
     window.formChanged = false;
-    window.userBirthDate = '{{ $user->birth_date?->format("Y-m-d") ?? "" }}';
     window.Toast = Swal.mixin({ 
         toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 
     });
 
 // Profile edit toggle
 function toggleProfileEdit() {
-    const inputs = ['input-name', 'input-email', 'input-phone', 'input-birth_date'];
+    const inputs = ['input-name', 'input-email', 'input-phone'];
     const editBtn = document.getElementById('editProfileBtn');
     const buttonsDiv = document.getElementById('profileFormButtons');
     
@@ -310,7 +207,7 @@ function toggleProfileEdit() {
 }
 
 function cancelProfileEdit() {
-    const inputs = ['input-name', 'input-email', 'input-phone', 'input-birth_date'];
+    const inputs = ['input-name', 'input-email', 'input-phone'];
     const editBtn = document.getElementById('editProfileBtn');
     const buttonsDiv = document.getElementById('profileFormButtons');
     
@@ -597,35 +494,6 @@ window.uploadCroppedImage = function() {
             title: 'Error Crop',
             text: 'Gagal memproses gambar. Silakan pilih gambar lain.'
         });
-    }
-}
-
-function openVerifyBirthModal() {
-    if (!userBirthDate) {
-        alert('Tanggal lahir belum diatur. Silakan isi tanggal lahir di bagian informasi profil terlebih dahulu.');
-        return;
-    }
-    openModal('verifyBirthModal');
-}
-
-function verifyBirthDate() {
-    const inputDate = document.getElementById('verify-birth-date').value;
-    if (inputDate === userBirthDate) {
-        closeModal('verifyBirthModal');
-        openModal('securityModal');
-        document.getElementById('verify-error').classList.add('hidden');
-    } else {
-        document.getElementById('verify-error').classList.remove('hidden');
-    }
-}
-
-function toggleCustomQuestion() {
-    const select = document.getElementById('securityQuestion');
-    const wrapper = document.getElementById('customQuestionWrapper');
-    if (select.value === '0') {
-        wrapper.classList.remove('hidden');
-    } else {
-        wrapper.classList.add('hidden');
     }
 }
 

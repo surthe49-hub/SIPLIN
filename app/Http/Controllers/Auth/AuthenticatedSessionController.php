@@ -76,7 +76,7 @@ class AuthenticatedSessionController extends Controller
                 ]);
 
                 return back()->withErrors([
-                    'email' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.',
+                    'email' => 'Akun menunggu verifikasi admin. Silakan coba lagi nanti.',
                 ]);
             }
 

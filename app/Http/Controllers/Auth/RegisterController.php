@@ -8,14 +8,13 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Log;
 
 class RegisterController extends Controller
 {
     /**
-     * Validate referral code - DEPRECATED tapi tetap ada untuk backward compat.
+     * Validate referral code - DEPRECATED.
+     * Method ini masih ada karena masih di-reference oleh routes/api.php.
      * Selalu return invalid karena fitur referral sudah dimatikan.
      */
     public function validateReferral(Request $request): JsonResponse
@@ -27,7 +26,12 @@ class RegisterController extends Controller
     }
 
     /**
-     * Proses registrasi tanpa referral, tanpa security questions.
+     * Proses registrasi.
+     *
+     * SECURITY MODEL: Registrasi publik tetap tersedia, namun user baru
+     * dibuat dengan is_active=false. Admin harus mengaktifkan akun secara
+     * manual sebelum user bisa login. Ini mencegah unauthorized access
+     * meskipun endpoint /register bersifat public.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -47,32 +51,32 @@ class RegisterController extends Controller
         ]);
 
         try {
-            $user = User::create([
+            // User dibuat dengan is_active=false. Admin harus approve manual.
+            $user = new User([
                 'name' => trim($validated['name']),
                 'email' => strtolower(trim($validated['email'])),
-                'password' => Hash::make($validated['password']),
+                'password' => bcrypt($validated['password']),
                 'phone' => $validated['phone'] ?? null,
-                'role' => 'user', // default role staff/user
-                'is_active' => true,
-                'security_setup_completed' => true, // langsung true, skip setup
+                'is_active' => false,
             ]);
-
-            Auth::login($user);
+            // Role di-set explicit di luar mass assignment untuk defense-in-depth
+            $user->role = 'user';
+            $user->save();
 
             ActivityLog::create([
                 'user_id' => $user->id,
                 'action' => 'register',
-                'description' => 'Registrasi akun baru',
+                'description' => 'Registrasi akun baru - menunggu persetujuan admin',
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->userAgent(),
             ]);
 
-            // LANGSUNG KE DASHBOARD, skip security setup
-            return redirect()->route('dashboard')
-                ->with('success', 'Registrasi berhasil! Selamat datang.');
+            // JANGAN auto-login. User harus tunggu admin approve.
+            return redirect()->route('auth')
+                ->with('success', 'Registrasi berhasil! Akun Anda menunggu persetujuan administrator. Anda akan bisa login setelah akun diaktifkan.');
 
         } catch (\Exception $e) {
-            \Log::error('Registration failed: ' . $e->getMessage(), [
+            Log::error('Registration failed: ' . $e->getMessage(), [
                 'input' => $request->except(['password', 'password_confirmation'])
             ]);
 
@@ -86,19 +90,5 @@ class RegisterController extends Controller
                 ->withInput()
                 ->with('error', 'Registrasi gagal. Silakan coba lagi.');
         }
-    }
-
-    /**
-     * METHOD DI-DISABLE - security setup tidak dipakai.
-     * Method tetap ada agar route tidak error, langsung redirect dashboard.
-     */
-    public function showSetupSecurity(): RedirectResponse
-    {
-        return redirect()->route('dashboard');
-    }
-
-    public function storeSetupSecurity(Request $request): RedirectResponse
-    {
-        return redirect()->route('dashboard');
     }
 }

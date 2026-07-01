@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
@@ -21,7 +21,6 @@ class ProfileController extends Controller
     {
         return view('auth.profile', [
             'user' => Auth::user(),
-            'securityQuestions' => config('security_questions.questions'),
         ]);
     }
 
@@ -32,7 +31,7 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Check if this is avatar-only update (from crop modal)
+        // Deteksi kalau ini avatar-only update (dari crop modal)
         $isAvatarOnly = $request->hasFile('avatar') && !$request->has('name');
 
         if ($isAvatarOnly) {
@@ -41,7 +40,6 @@ class ProfileController extends Controller
             ]);
 
             try {
-                // Hapus avatar lama
                 if ($user->avatar) {
                     Storage::disk('public')->delete($user->avatar);
                 }
@@ -51,7 +49,7 @@ class ProfileController extends Controller
 
                 if ($request->expectsJson() || $request->ajax()) {
                     return response()->json([
-                        'success' => true, 
+                        'success' => true,
                         'message' => 'Foto profil berhasil diperbarui.',
                         'avatar_url' => $user->avatar_url
                     ]);
@@ -79,23 +77,18 @@ class ProfileController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
             'phone' => ['nullable', 'string', 'regex:/^(\+62|0)[0-9]{9,12}$/', 'max:20'],
-            'birth_date' => ['nullable', 'date'],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,gif,webp', 'max:2048'],
         ]);
 
-        // Sanitize input data
         $validated['name'] = trim($validated['name']);
         $validated['email'] = strtolower(trim($validated['email']));
         $validated['phone'] = $validated['phone'] ? trim($validated['phone']) : null;
 
         try {
-            // Handle avatar upload
             if ($request->hasFile('avatar')) {
-                // Hapus avatar lama
                 if ($user->avatar) {
                     Storage::disk('public')->delete($user->avatar);
                 }
-
                 $validated['avatar'] = $request->file('avatar')->store('avatars', 'public');
             }
 
@@ -103,7 +96,7 @@ class ProfileController extends Controller
 
             if ($request->expectsJson() || $request->ajax()) {
                 return response()->json([
-                    'success' => true, 
+                    'success' => true,
                     'message' => 'Profil berhasil diperbarui.',
                     'avatar_url' => $user->avatar_url
                 ]);
@@ -137,46 +130,5 @@ class ProfileController extends Controller
         ]);
 
         return back()->with('success', 'Password berhasil diperbarui.');
-    }
-
-    /**
-     * Update pertanyaan keamanan.
-     */
-    public function updateSecurity(Request $request): RedirectResponse
-    {
-        $questions = config('security_questions.questions');
-        $validKeys = array_merge(array_keys($questions), [0]); // 0 = custom
-
-        $validated = $request->validate([
-            'security_question_1' => ['required', 'in:' . implode(',', $validKeys)],
-            'custom_security_question' => ['required_if:security_question_1,0', 'nullable', 'string', 'max:255'],
-            'security_answer_1' => ['required', 'string', 'max:255'],
-        ], [
-            'security_question_1.required' => 'Pilih pertanyaan keamanan.',
-            'custom_security_question.required_if' => 'Tulis pertanyaan custom Anda.',
-            'security_answer_1.required' => 'Masukkan jawaban keamanan.',
-        ]);
-
-        $user = Auth::user();
-        
-        $questionValue = (int) $validated['security_question_1'];
-        
-        $updateData = [
-            'security_question_1' => $questionValue,
-            'security_answer_1' => Hash::make(strtolower(trim($validated['security_answer_1']))),
-        ];
-
-        // Handle custom question (0 = custom)
-        if ($questionValue === 0) {
-            $updateData['custom_security_question'] = $validated['custom_security_question'];
-        } else {
-            $updateData['custom_security_question'] = null;
-        }
-
-        $user->update($updateData);
-
-        // Activity logged;
-
-        return back()->with('success', 'Pertanyaan keamanan berhasil diperbarui.');
     }
 }

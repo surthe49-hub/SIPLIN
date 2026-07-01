@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommodityController;
 use App\Http\Controllers\DashboardController;
@@ -31,10 +30,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('throttle:10,1')->group(function () {
-    // Validate Referral Code
-    Route::get('validate-referral', [RegisterController::class, 'validateReferral'])
-        ->name('api.validate-referral');
-    
     // Health check & public stats (for testing)
     Route::get('health', fn() => response()->json([
         'status' => 'ok',
